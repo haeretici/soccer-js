@@ -24,6 +24,12 @@ Head-to-head each `presets/ai_archetypes.json` style (full knobs incl. attack sh
 * `node scripts/eval_ai_presets.js '{"iterations":16,"seed":42,"matchDurationSeconds":600}'`
 * Writes JSON under `simulations/output/preset_eval/`. Use after changing preset numbers.
 
+## AI Preset Tune (side-swap bulk)
+Large batch with **side-swap** (preset as Team A and B vs `balanced`), mirrors, classic H2Hs, optional auto-patches + confirm.
+* `npm run sim:tune-presets` — default ~864 matches (32×2 side-swap + mirrors + classic + confirm)
+* `node scripts/tune_ai_presets.js '{"sideSwapIters":32,"mirrorIters":16,"classicIters":20,"confirmIters":16}'`
+* Output: `simulations/output/preset_tune/tune_*.json`
+
 ## AI Debug Overlays
 Toggled via `Settings.debugAI`. Skipped in headless.
 * Includes: `supportSpots`, `roles`, `states`, `passLanes`, `predictedPath` (3D ball trajectory), `goalMouth` (shot block samples), `offsideLine`.
