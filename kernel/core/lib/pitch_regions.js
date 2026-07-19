@@ -156,19 +156,22 @@ const POSTURE_REGION_COL_DELTA = {
  * Positive = toward opponent goal (in attack direction).
  * @param {string} role
  * @param {string} postureName
+ * @param {{ attackRoleBias?: number, defendRoleBias?: number }} [opts]
  * @returns {number}
  */
-function roleRegionColumnBias(role, postureName) {
+function roleRegionColumnBias(role, postureName, opts = {}) {
     if (!role || role === 'GK') return 0;
     const isDef = /CB|LB|RB|LCB|RCB|LWB|RWB|DM|CDM/i.test(role);
     const isAtt = /S|CF|ST|LW|RW|AM|CAM|SS|F|W|WF/i.test(role);
+    const attBias = typeof opts.attackRoleBias === 'number' ? opts.attackRoleBias : 1;
+    const defBias = typeof opts.defendRoleBias === 'number' ? opts.defendRoleBias : 1;
     if (postureName === 'attacking') {
-        if (isAtt) return 1;
+        if (isAtt) return attBias;
         if (isDef) return 0;
         return 0; // mid
     }
     if (postureName === 'defending') {
-        if (isDef) return -1;
+        if (isDef) return -defBias;
         if (isAtt) return 0;
         return 0;
     }
@@ -182,9 +185,14 @@ function roleRegionColumnBias(role, postureName) {
  * @param {PitchRegion[]} regions
  * @param {string} postureName
  * @param {boolean} attacksRight - true if this team attacks +X this half
+ * @param {{
+ *   postureColDelta?: number,
+ *   attackRoleBias?: number,
+ *   defendRoleBias?: number
+ * }} [opts] - when postureColDelta set, overrides POSTURE_REGION_COL_DELTA table
  * @returns {{ region: PitchRegion, baseX: number, baseY: number, homeRegionId: number }|null}
  */
-function computeHomeFromRegion(player, regions, postureName, attacksRight) {
+function computeHomeFromRegion(player, regions, postureName, attacksRight, opts = {}) {
     if (!regions || !regions.length || !player) return null;
     const { cols, rows } = gridSize(regions);
     let def = (player.defaultRegionId != null && regions[player.defaultRegionId])
@@ -197,12 +205,14 @@ function computeHomeFromRegion(player, regions, postureName, attacksRight) {
     }
     if (!def) return null;
 
-    const postureDelta = POSTURE_REGION_COL_DELTA[postureName] != null
-        ? POSTURE_REGION_COL_DELTA[postureName]
-        : 0;
-    const roleBias = roleRegionColumnBias(player.role, postureName);
+    const postureDelta = opts.postureColDelta != null
+        ? opts.postureColDelta
+        : (POSTURE_REGION_COL_DELTA[postureName] != null
+            ? POSTURE_REGION_COL_DELTA[postureName]
+            : 0);
+    const roleBias = roleRegionColumnBias(player.role, postureName, opts);
     // Positive delta = toward attack direction in world +X if attacksRight
-    const colShift = (postureDelta + roleBias) * (attacksRight ? 1 : -1);
+    const colShift = Math.round(postureDelta + roleBias) * (attacksRight ? 1 : -1);
     let ix = def.ix + colShift;
     if (ix < 0) ix = 0;
     if (ix >= cols) ix = cols - 1;

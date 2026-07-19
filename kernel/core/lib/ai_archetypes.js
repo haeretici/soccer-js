@@ -1,11 +1,14 @@
 const ARCHETYPES = require('../../../presets/ai_archetypes.json');
+const {
+    STRATEGY_KNOBS,
+    ALL_UI_KNOBS
+} = require('./ai_ui_knobs.js');
 
-const KNOB_KEYS = [
-    'FORMATION_HOLD',
-    'ATTACK_SUPPORT_INTENSITY',
-    'DEFENSIVE_PRESS_INTENSITY',
-    'PASS_AGGRESSION'
-];
+/** Classic four knobs used by archetypes / dynamic late-game shifts. */
+const KNOB_KEYS = STRATEGY_KNOBS.slice();
+
+/** All Engine Tweakings team-split knobs (strategy + attack shape). */
+const UI_KNOB_KEYS = ALL_UI_KNOBS.slice();
 
 function listArchetypes() {
     return Object.entries(ARCHETYPES)
@@ -39,6 +42,7 @@ function matchArchetype(aiBlock) {
 module.exports = {
     ARCHETYPES,
     KNOB_KEYS,
+    UI_KNOB_KEYS,
     listArchetypes,
     getArchetype,
     getArchetypeValues,

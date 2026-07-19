@@ -174,6 +174,59 @@
                             </div>
                             <input type="range" class="form-range" id="passAggressionSliderA" min="0" max="1" step="0.05" value="0.55">
                         </div>
+                        <div class="col-12 mt-2 mb-1">
+                            <span class="small text-muted fw-semibold">Attack shape</span>
+                            <span class="small text-muted"> — line push &amp; support runs (not changed by presets)</span>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex justify-content-between mb-1 align-items-center">
+                                <span class="small text-muted">Attack Line Depth</span>
+                                <span class="badge bg-secondary font-monospace" id="attackDepthValA">7.5</span>
+                            </div>
+                            <input type="range" class="form-range" id="attackDepthSliderA" min="0" max="25" step="0.5" value="7.5" title="Reference-field X push when attacking">
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex justify-content-between mb-1 align-items-center">
+                                <span class="small text-muted">Attack Region Shift</span>
+                                <span class="badge bg-secondary font-monospace" id="attackRegionShiftValA">1</span>
+                            </div>
+                            <input type="range" class="form-range" id="attackRegionShiftSliderA" min="0" max="3" step="1" value="1" title="Home-region columns toward opp goal">
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex justify-content-between mb-1 align-items-center">
+                                <span class="small text-muted">Attacker Region Bias</span>
+                                <span class="badge bg-secondary font-monospace" id="attackRoleBiasValA">1</span>
+                            </div>
+                            <input type="range" class="form-range" id="attackRoleBiasSliderA" min="0" max="2" step="1" value="1" title="Extra columns for strikers/wings">
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex justify-content-between mb-1 align-items-center">
+                                <span class="small text-muted">Own-Half Support</span>
+                                <span class="badge bg-secondary font-monospace" id="ownHalfSupportValA">0.35</span>
+                            </div>
+                            <input type="range" class="form-range" id="ownHalfSupportSliderA" min="0" max="1" step="0.05" value="0.35" title="Secondary support blend while ball is in own half">
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex justify-content-between mb-1 align-items-center">
+                                <span class="small text-muted">Support Form Pull</span>
+                                <span class="badge bg-secondary font-monospace" id="supportFormPullValA">1.00</span>
+                            </div>
+                            <input type="range" class="form-range" id="supportFormPullSliderA" min="0" max="1" step="0.05" value="1" title="Lower = freer support runs away from formation">
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex justify-content-between mb-1 align-items-center">
+                                <span class="small text-muted">Support Push Scale</span>
+                                <span class="badge bg-secondary font-monospace" id="supportPushScaleValA">1.00</span>
+                            </div>
+                            <input type="range" class="form-range" id="supportPushScaleSliderA" min="0" max="2" step="0.05" value="1" title="How far ahead of the carrier support lanes sit">
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex justify-content-between mb-1 align-items-center">
+                                <span class="small text-muted">Support Width</span>
+                                <span class="badge bg-secondary font-monospace" id="supportWidthValA">0.55</span>
+                            </div>
+                            <input type="range" class="form-range" id="supportWidthSliderA" min="0" max="1" step="0.05" value="0.55" title="Lateral stretch of support lanes / spots">
+                        </div>
 
                         <!-- Team B AI Strategy -->
                         <div class="col-12 mt-3 mb-2 d-flex flex-wrap align-items-center justify-content-between gap-2">
@@ -218,6 +271,59 @@
                                 <span class="badge bg-secondary font-monospace" id="passAggressionValB">0.55</span>
                             </div>
                             <input type="range" class="form-range" id="passAggressionSliderB" min="0" max="1" step="0.05" value="0.55">
+                        </div>
+                        <div class="col-12 mt-2 mb-1">
+                            <span class="small text-muted fw-semibold">Attack shape</span>
+                            <span class="small text-muted"> — line push &amp; support runs (not changed by presets)</span>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex justify-content-between mb-1 align-items-center">
+                                <span class="small text-muted">Attack Line Depth</span>
+                                <span class="badge bg-secondary font-monospace" id="attackDepthValB">7.5</span>
+                            </div>
+                            <input type="range" class="form-range" id="attackDepthSliderB" min="0" max="25" step="0.5" value="7.5" title="Reference-field X push when attacking">
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex justify-content-between mb-1 align-items-center">
+                                <span class="small text-muted">Attack Region Shift</span>
+                                <span class="badge bg-secondary font-monospace" id="attackRegionShiftValB">1</span>
+                            </div>
+                            <input type="range" class="form-range" id="attackRegionShiftSliderB" min="0" max="3" step="1" value="1" title="Home-region columns toward opp goal">
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex justify-content-between mb-1 align-items-center">
+                                <span class="small text-muted">Attacker Region Bias</span>
+                                <span class="badge bg-secondary font-monospace" id="attackRoleBiasValB">1</span>
+                            </div>
+                            <input type="range" class="form-range" id="attackRoleBiasSliderB" min="0" max="2" step="1" value="1" title="Extra columns for strikers/wings">
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex justify-content-between mb-1 align-items-center">
+                                <span class="small text-muted">Own-Half Support</span>
+                                <span class="badge bg-secondary font-monospace" id="ownHalfSupportValB">0.35</span>
+                            </div>
+                            <input type="range" class="form-range" id="ownHalfSupportSliderB" min="0" max="1" step="0.05" value="0.35" title="Secondary support blend while ball is in own half">
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex justify-content-between mb-1 align-items-center">
+                                <span class="small text-muted">Support Form Pull</span>
+                                <span class="badge bg-secondary font-monospace" id="supportFormPullValB">1.00</span>
+                            </div>
+                            <input type="range" class="form-range" id="supportFormPullSliderB" min="0" max="1" step="0.05" value="1" title="Lower = freer support runs away from formation">
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex justify-content-between mb-1 align-items-center">
+                                <span class="small text-muted">Support Push Scale</span>
+                                <span class="badge bg-secondary font-monospace" id="supportPushScaleValB">1.00</span>
+                            </div>
+                            <input type="range" class="form-range" id="supportPushScaleSliderB" min="0" max="2" step="0.05" value="1" title="How far ahead of the carrier support lanes sit">
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex justify-content-between mb-1 align-items-center">
+                                <span class="small text-muted">Support Width</span>
+                                <span class="badge bg-secondary font-monospace" id="supportWidthValB">0.55</span>
+                            </div>
+                            <input type="range" class="form-range" id="supportWidthSliderB" min="0" max="1" step="0.05" value="0.55" title="Lateral stretch of support lanes / spots">
                         </div>
                     </div>
 

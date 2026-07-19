@@ -209,6 +209,13 @@ function tickSetPieceCountdown(s, type, _setupDuration) {
     }
 }
 
+const {
+    STRATEGY_KNOBS,
+    ALL_UI_KNOBS,
+    readTeamUiKnobs
+} = require('../../core/lib/ai_ui_knobs.js');
+
+/** Legacy inline-panel slider ids (popup uses postMessage; kept for tests/compat). */
 const UI_AI_SLIDER_BINDINGS = [
     { id: 'formationHoldSliderA', team: 'A', key: 'FORMATION_HOLD' },
     { id: 'attackSupportSliderA', team: 'A', key: 'ATTACK_SUPPORT_INTENSITY' },
@@ -218,12 +225,6 @@ const UI_AI_SLIDER_BINDINGS = [
     { id: 'attackSupportSliderB', team: 'B', key: 'ATTACK_SUPPORT_INTENSITY' },
     { id: 'defensivePressSliderB', team: 'B', key: 'DEFENSIVE_PRESS_INTENSITY' },
     { id: 'passAggressionSliderB', team: 'B', key: 'PASS_AGGRESSION' }
-];
-const STRATEGY_KNOBS = [
-    'FORMATION_HOLD',
-    'ATTACK_SUPPORT_INTENSITY',
-    'DEFENSIVE_PRESS_INTENSITY',
-    'PASS_AGGRESSION'
 ];
 
 // Match state singletons for Simulator FSM (reference equality, one object per logical state)
@@ -748,9 +749,7 @@ class Simulator extends GameObject {
     }
 
     captureReplayConfig() {
-        const aiBlock = (teamKey) => Object.fromEntries(
-            STRATEGY_KNOBS.map((key) => [key, Settings.AI[teamKey][key]])
-        );
+        const aiBlock = (teamKey) => readTeamUiKnobs(Settings.AI[teamKey], Settings.AI);
 
         return {
             seed: this.seed,
@@ -782,9 +781,9 @@ class Simulator extends GameObject {
         if (typeof cfg.refereeStrictness === 'number') Settings.REFEREE_STRICTNESS = cfg.refereeStrictness;
         Settings.AI.dynamicStrategyShifting = cfg.dynamicStrategyShifting;
 
-        for (const key of STRATEGY_KNOBS) {
-            if (typeof cfg.aiA[key] === 'number') Settings.AI.A[key] = cfg.aiA[key];
-            if (typeof cfg.aiB[key] === 'number') Settings.AI.B[key] = cfg.aiB[key];
+        for (const key of ALL_UI_KNOBS) {
+            if (cfg.aiA && typeof cfg.aiA[key] === 'number') Settings.AI.A[key] = cfg.aiA[key];
+            if (cfg.aiB && typeof cfg.aiB[key] === 'number') Settings.AI.B[key] = cfg.aiB[key];
         }
     }
 
@@ -948,18 +947,13 @@ class Simulator extends GameObject {
             this.setupTeam('A', this.teamAName, this.formationAName);
             this.setupTeam('B', this.teamBName, this.formationBName);
 
-            this.baseStrategyA = {
-                FORMATION_HOLD: Settings.AI.A.FORMATION_HOLD,
-                ATTACK_SUPPORT_INTENSITY: Settings.AI.A.ATTACK_SUPPORT_INTENSITY,
-                DEFENSIVE_PRESS_INTENSITY: Settings.AI.A.DEFENSIVE_PRESS_INTENSITY,
-                PASS_AGGRESSION: Settings.AI.A.PASS_AGGRESSION
-            };
-            this.baseStrategyB = {
-                FORMATION_HOLD: Settings.AI.B.FORMATION_HOLD,
-                ATTACK_SUPPORT_INTENSITY: Settings.AI.B.ATTACK_SUPPORT_INTENSITY,
-                DEFENSIVE_PRESS_INTENSITY: Settings.AI.B.DEFENSIVE_PRESS_INTENSITY,
-                PASS_AGGRESSION: Settings.AI.B.PASS_AGGRESSION
-            };
+            // Base strategy = archetype-overridable knobs only (shape knobs stay live)
+            this.baseStrategyA = Object.fromEntries(
+                STRATEGY_KNOBS.map((key) => [key, Settings.AI.A[key]])
+            );
+            this.baseStrategyB = Object.fromEntries(
+                STRATEGY_KNOBS.map((key) => [key, Settings.AI.B[key]])
+            );
 
             this.resetToKickoff();
             // Ensure Kickoff.enter runs for the very first match kickoff (ctor/reset use setCurrent to avoid early side-effects)
@@ -1099,7 +1093,7 @@ class Simulator extends GameObject {
         const { getArchetypeValues } = require('../../core/lib/ai_archetypes.js');
         const values = getArchetypeValues(archetypeId);
         if (values) {
-            for (const key of ['FORMATION_HOLD', 'ATTACK_SUPPORT_INTENSITY', 'DEFENSIVE_PRESS_INTENSITY', 'PASS_AGGRESSION']) {
+            for (const key of STRATEGY_KNOBS) {
                 Settings.AI[team][key] = values[key];
             }
             if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function' && typeof CustomEvent !== 'undefined') {
@@ -1111,7 +1105,7 @@ class Simulator extends GameObject {
     restoreBaseStrategy(team) {
         const base = team === 'A' ? this.baseStrategyA : this.baseStrategyB;
         if (base) {
-            for (const key of ['FORMATION_HOLD', 'ATTACK_SUPPORT_INTENSITY', 'DEFENSIVE_PRESS_INTENSITY', 'PASS_AGGRESSION']) {
+            for (const key of STRATEGY_KNOBS) {
                 Settings.AI[team][key] = base[key];
             }
             if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function' && typeof CustomEvent !== 'undefined') {
@@ -1120,15 +1114,45 @@ class Simulator extends GameObject {
         }
     }
 
+    /**
+     * Apply a live Engine Tweakings / UI knob for a team.
+     * Strategy knobs update baseStrategy (for dynamic shift restore); shape knobs always apply live.
+     * Re-applies squad posture so region depth shifts take effect immediately.
+     */
     updateBaseStrategyValue(team, key, value) {
-        const base = team === 'A' ? this.baseStrategyA : this.baseStrategyB;
-        if (base) {
-            base[key] = value;
-        }
-        const currentShift = team === 'A' ? this.activeShiftA : this.activeShiftB;
-        if (!currentShift) {
+        Settings.AI[team] = Settings.AI[team] || Object.create(Settings.AI);
+        const isStrategy = STRATEGY_KNOBS.includes(key);
+        if (isStrategy) {
+            const base = team === 'A' ? this.baseStrategyA : this.baseStrategyB;
+            if (base) {
+                base[key] = value;
+            }
+            const currentShift = team === 'A' ? this.activeShiftA : this.activeShiftB;
+            if (!currentShift) {
+                Settings.AI[team][key] = value;
+            }
+        } else {
+            // Shape / advanced knobs are never replaced by archetype shifts
             Settings.AI[team][key] = value;
         }
+        this.refreshTeamPosture(team);
+    }
+
+    /** Re-bind home regions / depth after live AI shape knobs change. */
+    refreshTeamPosture(teamKey) {
+        const team = this.getTeam(teamKey);
+        if (!team || typeof team.applyPosture !== 'function') return;
+        const posture = team.postureName || 'kickoffprepare';
+        const opts = {};
+        // Preserve counterpress delay-drop if still in window
+        if (
+            posture === 'defending'
+            && typeof team.isCounterpressing === 'function'
+            && team.isCounterpressing()
+        ) {
+            opts.delayRegionDrop = true;
+        }
+        team.applyPosture(posture, opts);
     }
 
     /**

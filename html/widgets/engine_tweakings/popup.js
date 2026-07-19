@@ -4,24 +4,79 @@
  */
 (function () {
     const CHANNEL = 'soccer-js-engine-tweaks';
-    const KNOB_KEYS = [
+    /** Archetype-matched strategy knobs only (presets leave attack-shape alone). */
+    const STRATEGY_KNOB_KEYS = [
         'FORMATION_HOLD',
         'ATTACK_SUPPORT_INTENSITY',
         'DEFENSIVE_PRESS_INTENSITY',
         'PASS_AGGRESSION'
     ];
+    /** All team-split knobs sent to parent (strategy + attack shape). */
+    const KNOB_KEYS = [
+        'FORMATION_HOLD',
+        'ATTACK_SUPPORT_INTENSITY',
+        'DEFENSIVE_PRESS_INTENSITY',
+        'PASS_AGGRESSION',
+        'ATTACK_DEPTH_BIAS_REF',
+        'ATTACK_REGION_COL_DELTA',
+        'ATTACK_ROLE_REGION_BIAS',
+        'ATTACK_SUPPORT_OWN_HALF_BLEND',
+        'ATTACK_SUPPORT_FORM_PULL',
+        'ATTACK_SUPPORT_PUSH_SCALE',
+        'SUPPORT_WIDTH'
+    ];
+    const KNOB_DECIMALS = {
+        FORMATION_HOLD: 2,
+        ATTACK_SUPPORT_INTENSITY: 2,
+        DEFENSIVE_PRESS_INTENSITY: 2,
+        PASS_AGGRESSION: 2,
+        ATTACK_DEPTH_BIAS_REF: 1,
+        ATTACK_REGION_COL_DELTA: 0,
+        ATTACK_ROLE_REGION_BIAS: 0,
+        ATTACK_SUPPORT_OWN_HALF_BLEND: 2,
+        ATTACK_SUPPORT_FORM_PULL: 2,
+        ATTACK_SUPPORT_PUSH_SCALE: 2,
+        SUPPORT_WIDTH: 2
+    };
+    const KNOB_DEFAULTS = {
+        FORMATION_HOLD: 0.55,
+        ATTACK_SUPPORT_INTENSITY: 0.65,
+        DEFENSIVE_PRESS_INTENSITY: 0.45,
+        PASS_AGGRESSION: 0.55,
+        ATTACK_DEPTH_BIAS_REF: 7.5,
+        ATTACK_REGION_COL_DELTA: 1,
+        ATTACK_ROLE_REGION_BIAS: 1,
+        ATTACK_SUPPORT_OWN_HALF_BLEND: 0.35,
+        ATTACK_SUPPORT_FORM_PULL: 1.0,
+        ATTACK_SUPPORT_PUSH_SCALE: 1.0,
+        SUPPORT_WIDTH: 0.55
+    };
     const AI_SLIDER_IDS = {
         A: {
             FORMATION_HOLD: 'formationHoldSliderA',
             ATTACK_SUPPORT_INTENSITY: 'attackSupportSliderA',
             DEFENSIVE_PRESS_INTENSITY: 'defensivePressSliderA',
-            PASS_AGGRESSION: 'passAggressionSliderA'
+            PASS_AGGRESSION: 'passAggressionSliderA',
+            ATTACK_DEPTH_BIAS_REF: 'attackDepthSliderA',
+            ATTACK_REGION_COL_DELTA: 'attackRegionShiftSliderA',
+            ATTACK_ROLE_REGION_BIAS: 'attackRoleBiasSliderA',
+            ATTACK_SUPPORT_OWN_HALF_BLEND: 'ownHalfSupportSliderA',
+            ATTACK_SUPPORT_FORM_PULL: 'supportFormPullSliderA',
+            ATTACK_SUPPORT_PUSH_SCALE: 'supportPushScaleSliderA',
+            SUPPORT_WIDTH: 'supportWidthSliderA'
         },
         B: {
             FORMATION_HOLD: 'formationHoldSliderB',
             ATTACK_SUPPORT_INTENSITY: 'attackSupportSliderB',
             DEFENSIVE_PRESS_INTENSITY: 'defensivePressSliderB',
-            PASS_AGGRESSION: 'passAggressionSliderB'
+            PASS_AGGRESSION: 'passAggressionSliderB',
+            ATTACK_DEPTH_BIAS_REF: 'attackDepthSliderB',
+            ATTACK_REGION_COL_DELTA: 'attackRegionShiftSliderB',
+            ATTACK_ROLE_REGION_BIAS: 'attackRoleBiasSliderB',
+            ATTACK_SUPPORT_OWN_HALF_BLEND: 'ownHalfSupportSliderB',
+            ATTACK_SUPPORT_FORM_PULL: 'supportFormPullSliderB',
+            ATTACK_SUPPORT_PUSH_SCALE: 'supportPushScaleSliderB',
+            SUPPORT_WIDTH: 'supportWidthSliderB'
         }
     };
     const AI_VAL_IDS = {
@@ -29,15 +84,34 @@
             FORMATION_HOLD: 'formationHoldValA',
             ATTACK_SUPPORT_INTENSITY: 'attackSupportValA',
             DEFENSIVE_PRESS_INTENSITY: 'defensivePressValA',
-            PASS_AGGRESSION: 'passAggressionValA'
+            PASS_AGGRESSION: 'passAggressionValA',
+            ATTACK_DEPTH_BIAS_REF: 'attackDepthValA',
+            ATTACK_REGION_COL_DELTA: 'attackRegionShiftValA',
+            ATTACK_ROLE_REGION_BIAS: 'attackRoleBiasValA',
+            ATTACK_SUPPORT_OWN_HALF_BLEND: 'ownHalfSupportValA',
+            ATTACK_SUPPORT_FORM_PULL: 'supportFormPullValA',
+            ATTACK_SUPPORT_PUSH_SCALE: 'supportPushScaleValA',
+            SUPPORT_WIDTH: 'supportWidthValA'
         },
         B: {
             FORMATION_HOLD: 'formationHoldValB',
             ATTACK_SUPPORT_INTENSITY: 'attackSupportValB',
             DEFENSIVE_PRESS_INTENSITY: 'defensivePressValB',
-            PASS_AGGRESSION: 'passAggressionValB'
+            PASS_AGGRESSION: 'passAggressionValB',
+            ATTACK_DEPTH_BIAS_REF: 'attackDepthValB',
+            ATTACK_REGION_COL_DELTA: 'attackRegionShiftValB',
+            ATTACK_ROLE_REGION_BIAS: 'attackRoleBiasValB',
+            ATTACK_SUPPORT_OWN_HALF_BLEND: 'ownHalfSupportValB',
+            ATTACK_SUPPORT_FORM_PULL: 'supportFormPullValB',
+            ATTACK_SUPPORT_PUSH_SCALE: 'supportPushScaleValB',
+            SUPPORT_WIDTH: 'supportWidthValB'
         }
     };
+
+    function formatKnob(key, val) {
+        const d = KNOB_DECIMALS[key] != null ? KNOB_DECIMALS[key] : 2;
+        return Number(val).toFixed(d);
+    }
 
     const parent = window.opener;
     if (!parent || parent.closed) {
@@ -69,7 +143,9 @@
         const out = {};
         for (const key of KNOB_KEYS) {
             const slider = byId(AI_SLIDER_IDS[team][key]);
-            out[key] = slider ? parseFloat(slider.value) : 0.5;
+            out[key] = slider
+                ? parseFloat(slider.value)
+                : (KNOB_DEFAULTS[key] != null ? KNOB_DEFAULTS[key] : 0.5);
         }
         return out;
     }
@@ -80,7 +156,10 @@
 
     function matchArchetype(aiBlock) {
         for (const [id, arch] of Object.entries(aiArchetypes)) {
-            const matches = KNOB_KEYS.every((key) => Math.abs((aiBlock[key] ?? -1) - arch[key]) < 0.001);
+            // Only the classic four knobs define a preset match
+            const matches = STRATEGY_KNOB_KEYS.every(
+                (key) => Math.abs((aiBlock[key] ?? -1) - arch[key]) < 0.001
+            );
             if (matches) return id;
         }
         return 'custom';
@@ -127,11 +206,12 @@
     function applyArchetypeToSliders(team, archetypeId) {
         const arch = aiArchetypes[archetypeId];
         if (!arch) return false;
-        for (const key of KNOB_KEYS) {
+        // Presets only touch strategy knobs — attack shape stays user-tuned
+        for (const key of STRATEGY_KNOB_KEYS) {
             const slider = byId(AI_SLIDER_IDS[team][key]);
             const valEl = byId(AI_VAL_IDS[team][key]);
             if (slider) slider.value = arch[key];
-            if (valEl) valEl.innerText = Number(arch[key]).toFixed(2);
+            if (valEl) valEl.innerText = formatKnob(key, arch[key]);
         }
         updateArchetypeDescription(team, archetypeId);
         return true;
@@ -218,9 +298,11 @@
             for (const key of KNOB_KEYS) {
                 const slider = byId(AI_SLIDER_IDS[team][key]);
                 const valEl = byId(AI_VAL_IDS[team][key]);
-                const v = typeof block[key] === 'number' ? block[key] : 0.5;
+                const v = typeof block[key] === 'number'
+                    ? block[key]
+                    : (KNOB_DEFAULTS[key] != null ? KNOB_DEFAULTS[key] : 0.5);
                 if (slider) slider.value = v;
-                if (valEl) valEl.innerText = v.toFixed(2);
+                if (valEl) valEl.innerText = formatKnob(key, v);
             }
             if (archetypesReady) syncArchetypeSelect(team);
         }
@@ -326,21 +408,30 @@
             return patch;
         }
 
-        // AI knobs
+        // AI knobs (strategy + attack shape)
         const team = id.endsWith('A') ? 'A' : id.endsWith('B') ? 'B' : null;
         if (team) {
             const map = {
                 ['formationHoldSlider' + team]: 'FORMATION_HOLD',
                 ['attackSupportSlider' + team]: 'ATTACK_SUPPORT_INTENSITY',
                 ['defensivePressSlider' + team]: 'DEFENSIVE_PRESS_INTENSITY',
-                ['passAggressionSlider' + team]: 'PASS_AGGRESSION'
+                ['passAggressionSlider' + team]: 'PASS_AGGRESSION',
+                ['attackDepthSlider' + team]: 'ATTACK_DEPTH_BIAS_REF',
+                ['attackRegionShiftSlider' + team]: 'ATTACK_REGION_COL_DELTA',
+                ['attackRoleBiasSlider' + team]: 'ATTACK_ROLE_REGION_BIAS',
+                ['ownHalfSupportSlider' + team]: 'ATTACK_SUPPORT_OWN_HALF_BLEND',
+                ['supportFormPullSlider' + team]: 'ATTACK_SUPPORT_FORM_PULL',
+                ['supportPushScaleSlider' + team]: 'ATTACK_SUPPORT_PUSH_SCALE',
+                ['supportWidthSlider' + team]: 'SUPPORT_WIDTH'
             };
             const key = map[id];
             if (key) {
                 const val = parseFloat(target.value);
-                const valId = id.replace('Slider', 'Val');
-                if (byId(valId)) byId(valId).innerText = val.toFixed(2);
-                if (archetypesReady) syncArchetypeSelect(team);
+                const valEl = byId(AI_VAL_IDS[team][key]);
+                if (valEl) valEl.innerText = formatKnob(key, val);
+                if (archetypesReady && STRATEGY_KNOB_KEYS.includes(key)) {
+                    syncArchetypeSelect(team);
+                }
                 patch.AI = collectBothTeamsAI();
                 return patch;
             }

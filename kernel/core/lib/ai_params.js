@@ -13,13 +13,11 @@ const { Settings } = require('../../settings.js');
 
 const DEFAULT_AI_PARAMS_PATH = path.join(__dirname, '../../../presets/ai_params.json');
 
-/** Four strategy knobs also used by UI archetypes / legacy batch schema. */
-const STRATEGY_KNOBS = [
-    'FORMATION_HOLD',
-    'ATTACK_SUPPORT_INTENSITY',
-    'DEFENSIVE_PRESS_INTENSITY',
-    'PASS_AGGRESSION'
-];
+const {
+    STRATEGY_KNOBS,
+    ALL_UI_KNOBS,
+    isValidKnobValue
+} = require('./ai_ui_knobs.js');
 
 /**
  * Keys currently defined on Settings.AI (own enumerable, excluding A/B).
@@ -94,6 +92,7 @@ function normalizeAiParamsBlock(block) {
     if (!block || typeof block !== 'object') return null;
     const known = new Set(listSettingsAiKeys());
     for (const k of STRATEGY_KNOBS) known.add(k);
+    for (const k of ALL_UI_KNOBS) known.add(k);
 
     const out = {};
     for (const [key, val] of Object.entries(block)) {
@@ -102,9 +101,11 @@ function normalizeAiParamsBlock(block) {
 
         const current = Settings.AI[key];
         if (typeof val === 'number' && Number.isFinite(val)) {
-            // Strategy knobs historically clamped 0–1; keep that for those four only
+            // Strategy knobs historically 0–1; UI shape knobs use published min/max
             if (STRATEGY_KNOBS.includes(key)) {
                 if (val >= 0 && val <= 1) out[key] = val;
+            } else if (ALL_UI_KNOBS.includes(key)) {
+                if (isValidKnobValue(key, val)) out[key] = val;
             } else {
                 out[key] = val;
             }
@@ -271,6 +272,7 @@ function resolveBatchAiConfig(cfg) {
 module.exports = {
     DEFAULT_AI_PARAMS_PATH,
     STRATEGY_KNOBS,
+    ALL_UI_KNOBS,
     listSettingsAiKeys,
     snapshotBaseAiParams,
     extractDefaultsMap,

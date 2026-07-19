@@ -241,8 +241,15 @@ function resolveIdleMoveTarget(player, api = {}) {
                 return finish(t.x, t.y, PositionLayer.BALL_SHAPE, 'attack_support_full');
             }
             const light = api.computeAttackSupportTarget(player, ball.owner, level);
-            const intensity = api.ai ? api.ai(player).ATTACK_SUPPORT_INTENSITY : 0.65;
-            const blend = intensity * 0.35;
+            const a = api.ai ? api.ai(player) : null;
+            const intensity = a && typeof a.ATTACK_SUPPORT_INTENSITY === 'number'
+                ? a.ATTACK_SUPPORT_INTENSITY
+                : 0.65;
+            // ATTACK_SUPPORT_OWN_HALF_BLEND (default 0.35): share of full support target while building
+            const ownHalfScale = a && typeof a.ATTACK_SUPPORT_OWN_HALF_BLEND === 'number'
+                ? a.ATTACK_SUPPORT_OWN_HALF_BLEND
+                : 0.35;
+            const blend = Math.max(0, Math.min(1, intensity * ownHalfScale));
             return finish(
                 l3.x * (1 - blend) + light.x * blend,
                 l3.y * (1 - blend) + light.y * blend,

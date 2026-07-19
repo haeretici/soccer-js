@@ -4,8 +4,10 @@
 * **Squad Management:** Max 11 players. Handles substitutions (substitutes players with < 0.55 stamina late in game).
 * **Pass Target Selection:** Evaluates intercept safety, lead aims, and progressive scoring. Passes must exceed `SHORT_PASS_MIN_DIST`. Kick speed is friction-aware.
 * **Shooting (ISS-leaning):** `canShoot` samples goal mouth (Y 40–60) in three tiers: (1) fully clear lane, (2) soft lane with defender close-speed scaled by `SHOOT_LANE_OPP_SPEED_SCALE`, (3) contested sample accepted via distance/blocker-weighted RNG (`SHOOT_CONTESTED_*`). Support-spot scoring uses `allowContested: false` (deterministic). Dribble may still force a mouth aim when blocked (`SHOOT_FORCE_BLOCKED_CHANCE`). Range: `SHOOT_RANGE_REF` (phase mult). Outfield blocks (`tryBallShotBlocking`) use thinner bodies / lower max-z (`SHOT_BLOCK_*`). GK save chance on `ball.isShot` is scaled by `GK_SHOT_SAVE_MULT`.
-* **Regions & Posture:** Shifts `baseX/baseY` based on `Attacking/Defending` states.
-* **Dynamic Strategy:** Teams shift to `gegenpressing` (losing late) or `catenaccio` (winning late) if `dynamicStrategyShifting` is enabled.
+* **Regions & Posture:** Shifts `baseX/baseY` based on `Attacking/Defending` states. Attack/defend line depth and region column deltas are live knobs (`ATTACK_DEPTH_BIAS_REF`, `ATTACK_REGION_COL_DELTA`, `ATTACK_ROLE_REGION_BIAS`, defend counterparts).
+* **Attack support shape:** Secondary Idle support uses `computeAttackSupportTarget` (push scale, form pull, `SUPPORT_WIDTH`). Own-half possession light-blends with `ATTACK_SUPPORT_OWN_HALF_BLEND` × intensity (default 0.35). Only one primary `supportingPlayer` runs full support spots.
+* **Engine Tweakings:** Strategy presets (hold / support / press / pass) plus **Attack shape** sliders per team. Shape knobs are not overwritten by archetypes or dynamic late-game shifts. Defaults match prior hardcodes so balance is unchanged until you raise depth/region/own-half support.
+* **Dynamic Strategy:** Teams shift to `gegenpressing` (losing late) or `catenaccio` (winning late) if `dynamicStrategyShifting` is enabled (strategy knobs only).
 
 ## Player FSM (`fsm.js` -> `player_states.js`)
 1. **Idle:** Resolves position via 5-layer stack (Formation -> Region -> Depth/Hold -> Shape -> Mark/Cover).

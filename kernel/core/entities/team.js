@@ -417,10 +417,23 @@ class Team extends GameObject {
             ? attacksRightGoal(level, this.teamKey)
             : (this.teamKey === 'A');
         const posture = this.postureName || 'kickoffprepare';
+        const teamAi = ai(this.teamKey);
+        const regionOpts = {
+            // Use team-cached delta so counterpress delay drop (colDelta=0) is honoured
+            postureColDelta: this.homeRegionColumnDelta != null
+                ? this.homeRegionColumnDelta
+                : (POSTURE_REGION_COL_DELTA[posture] != null ? POSTURE_REGION_COL_DELTA[posture] : 0),
+            attackRoleBias: typeof teamAi.ATTACK_ROLE_REGION_BIAS === 'number'
+                ? teamAi.ATTACK_ROLE_REGION_BIAS
+                : 1,
+            defendRoleBias: typeof teamAi.DEFEND_ROLE_REGION_BIAS === 'number'
+                ? teamAi.DEFEND_ROLE_REGION_BIAS
+                : 1
+        };
 
         for (const p of this.players) {
             if (p.isSentOff) continue;
-            const home = computeHomeFromRegion(p, regions, posture, attacksRight);
+            const home = computeHomeFromRegion(p, regions, posture, attacksRight, regionOpts);
             if (!home) continue;
             p.homeRegionId = home.homeRegionId;
             p.baseX = home.baseX;
@@ -1470,15 +1483,33 @@ class Team extends GameObject {
     applyPosture(postureName, opts = {}) {
         const key = POSTURE_DEPTH_REF[postureName] !== undefined ? postureName : 'kickoffprepare';
         this.postureName = key;
+        const teamAi = ai(this.teamKey);
         let depth = POSTURE_DEPTH_REF[key];
         let holdBias = POSTURE_HOLD_BIAS[key];
         let colDelta = POSTURE_REGION_COL_DELTA[key] != null
             ? POSTURE_REGION_COL_DELTA[key]
             : 0;
 
+        // Live Settings.AI overrides for attack/defend line (Engine Tweakings)
+        if (key === 'attacking') {
+            if (typeof teamAi.ATTACK_DEPTH_BIAS_REF === 'number') {
+                depth = teamAi.ATTACK_DEPTH_BIAS_REF;
+            }
+            if (typeof teamAi.ATTACK_REGION_COL_DELTA === 'number') {
+                colDelta = Math.round(teamAi.ATTACK_REGION_COL_DELTA);
+            }
+        } else if (key === 'defending') {
+            if (typeof teamAi.DEFEND_DEPTH_BIAS_REF === 'number') {
+                depth = teamAi.DEFEND_DEPTH_BIAS_REF;
+            }
+            if (typeof teamAi.DEFEND_REGION_COL_DELTA === 'number') {
+                colDelta = Math.round(teamAi.DEFEND_REGION_COL_DELTA);
+            }
+        }
+
         // A.4: during counterpress, non-surge "delay drop" — hold higher line / no deep column shift
         if (opts.delayRegionDrop && key === 'defending') {
-            const scale = ai(this.teamKey).COUNTERPRESS_DELAY_DEPTH_SCALE ?? 0.3;
+            const scale = teamAi.COUNTERPRESS_DELAY_DEPTH_SCALE ?? 0.3;
             depth = depth * scale;
             holdBias = holdBias * 0.5;
             colDelta = 0;
@@ -1494,16 +1525,24 @@ class Team extends GameObject {
      * World-space X offset for a player's formation target under current posture.
      * Uses attack direction (half-aware) × role multiplier × depthBiasRef.
      * Non-surge players during counterpress get extra depth scale-down (delay drop).
+     * Re-reads live ATTACK/DEFEND_DEPTH_BIAS_REF so Engine Tweakings apply mid-match.
      * @param {{ role?: string }} player
      */
     getDepthWorldOffset(player) {
-        if (!this.depthBiasRef || !player) return 0;
+        if (!player) return 0;
         const mult = roleDepthMultiplier(player.role);
         if (mult === 0) return 0;
         const level = this.level;
         if (!level || typeof level.isSecondHalf !== 'function') return 0;
         const sign = attacksRightGoal(level, this.teamKey) ? 1 : -1;
-        let bias = this.depthBiasRef;
+        const teamAi = ai(this.teamKey);
+        let bias = this.depthBiasRef || 0;
+        if (this.postureName === 'attacking' && typeof teamAi.ATTACK_DEPTH_BIAS_REF === 'number') {
+            bias = teamAi.ATTACK_DEPTH_BIAS_REF;
+        } else if (this.postureName === 'defending' && typeof teamAi.DEFEND_DEPTH_BIAS_REF === 'number') {
+            bias = teamAi.DEFEND_DEPTH_BIAS_REF;
+        }
+        if (!bias) return 0;
         // Extra delay for non-surge if posture already fully defending but window still open
         if (
             this.isCounterpressing()
@@ -1511,7 +1550,7 @@ class Team extends GameObject {
             && this.postureName === 'defending'
             && this.homeRegionColumnDelta < 0
         ) {
-            const scale = ai(this.teamKey).COUNTERPRESS_DELAY_DEPTH_SCALE ?? 0.3;
+            const scale = teamAi.COUNTERPRESS_DELAY_DEPTH_SCALE ?? 0.3;
             bias *= scale;
         }
         return sign * Utils.scaleFieldX(bias * mult);

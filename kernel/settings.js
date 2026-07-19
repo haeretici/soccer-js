@@ -358,11 +358,39 @@ var Settings = {
         DEFENSIVE_COMPRESS_BLEND: 0.35,
         DEFENSIVE_RECOVERY_BLEND: 0.4,
         DANGER_ZONE_FIELD_RATIO: 0.45,
-        // Strategy knobs (also exposed in Engine Tweakings UI)
+        // Strategy knobs (also exposed in Engine Tweakings UI + archetypes)
         FORMATION_HOLD: 0.55,
         ATTACK_SUPPORT_INTENSITY: 0.65,
         DEFENSIVE_PRESS_INTENSITY: 0.45,
         PASS_AGGRESSION: 0.55,
+        /**
+         * Attack shape knobs (Engine Tweakings — not overridden by archetypes).
+         * Defaults match prior hardcodes so existing balance is unchanged at 1×.
+         */
+        /** Reference-field X push when TeamStates.Attacking (was POSTURE_DEPTH_REF.attacking) */
+        ATTACK_DEPTH_BIAS_REF: 7.5,
+        /** Reference-field X drop when Defending (was POSTURE_DEPTH_REF.defending) */
+        DEFEND_DEPTH_BIAS_REF: -3.5,
+        /** Home-region columns toward opp goal when Attacking (was POSTURE_REGION_COL_DELTA.attacking) */
+        ATTACK_REGION_COL_DELTA: 1,
+        /** Home-region columns toward own goal when Defending */
+        DEFEND_REGION_COL_DELTA: -1,
+        /** Extra columns for ST/wings when Attacking (roleRegionColumnBias) */
+        ATTACK_ROLE_REGION_BIAS: 1,
+        /** Extra columns back for CB/FB when Defending */
+        DEFEND_ROLE_REGION_BIAS: 1,
+        /**
+         * Own-half secondary support: blend = ATTACK_SUPPORT_INTENSITY × this
+         * when carrier is not yet in the attacking half (was hardcoded 0.35).
+         */
+        ATTACK_SUPPORT_OWN_HALF_BLEND: 0.35,
+        /**
+         * Multiplier on formation pull inside computeAttackSupportTarget formWeight.
+         * 1 = legacy; lower = freer support runs away from base slots.
+         */
+        ATTACK_SUPPORT_FORM_PULL: 1.0,
+        /** Scale on lane x-push distances for secondary support (1 = legacy) */
+        ATTACK_SUPPORT_PUSH_SCALE: 1.0,
         /**
          * Max shoot distance (reference-field units → scaleFieldX).
          * ISS-leaning: allow edge-of-box / early speculative strikes (~42 m on FIFA pitch).
@@ -606,6 +634,25 @@ if (typeof window !== 'undefined' && window.localStorage) {
                 for (const key of keys) {
                     const val = parsed[key];
                     if (typeof val === 'number' && val >= 0 && val <= 1) {
+                        Settings.AI[key] = val;
+                    }
+                }
+                // Shape knobs may appear on legacy flat maps too
+                const shapeKeys = [
+                    'ATTACK_DEPTH_BIAS_REF',
+                    'DEFEND_DEPTH_BIAS_REF',
+                    'ATTACK_REGION_COL_DELTA',
+                    'DEFEND_REGION_COL_DELTA',
+                    'ATTACK_ROLE_REGION_BIAS',
+                    'DEFEND_ROLE_REGION_BIAS',
+                    'ATTACK_SUPPORT_OWN_HALF_BLEND',
+                    'ATTACK_SUPPORT_FORM_PULL',
+                    'ATTACK_SUPPORT_PUSH_SCALE',
+                    'SUPPORT_WIDTH'
+                ];
+                for (const key of shapeKeys) {
+                    const val = parsed[key];
+                    if (typeof val === 'number' && Number.isFinite(val)) {
                         Settings.AI[key] = val;
                     }
                 }

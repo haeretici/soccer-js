@@ -7,7 +7,11 @@ const {
     ENGINE_TWEAKS_WINDOW_NAME,
     ENGINE_TWEAKS_URL
 } = require('./protocol.js');
-const { KNOB_KEYS } = require('../../../kernel/core/lib/ai_archetypes.js');
+const {
+    ALL_UI_KNOBS,
+    isValidKnobValue,
+    readTeamUiKnobs
+} = require('../../../kernel/core/lib/ai_ui_knobs.js');
 
 /**
  * @param {{ Settings: object, Application: object }} ctx
@@ -43,16 +47,8 @@ function createEngineTweakingsParentBridge(ctx) {
                 goalMouth: false
             };
         }
-        // Read live AI values (own props on A/B, else prototype / base)
-        const readTeam = (team) => {
-            const block = Settings.AI[team] || Settings.AI;
-            const out = {};
-            for (const k of KNOB_KEYS) {
-                const v = block[k];
-                out[k] = typeof v === 'number' ? v : Settings.AI[k];
-            }
-            return out;
-        };
+        // Read live AI values (strategy + attack shape; own props on A/B, else base)
+        const readTeam = (team) => readTeamUiKnobs(Settings.AI[team] || Settings.AI, Settings.AI);
         return {
             camera: {
                 scale: Settings.camera?.scale ?? Settings.BASE_SCALE,
@@ -205,9 +201,9 @@ function createEngineTweakingsParentBridge(ctx) {
             for (const team of ['A', 'B']) {
                 if (!patch.AI[team]) continue;
                 Settings.AI[team] = Settings.AI[team] || Object.create(Settings.AI);
-                for (const key of KNOB_KEYS) {
+                for (const key of ALL_UI_KNOBS) {
                     const val = patch.AI[team][key];
-                    if (typeof val !== 'number' || val < 0 || val > 1) continue;
+                    if (!isValidKnobValue(key, val)) continue;
                     if (Application.currentLevel && typeof Application.currentLevel.updateBaseStrategyValue === 'function') {
                         Application.currentLevel.updateBaseStrategyValue(team, key, val);
                     } else {
@@ -217,8 +213,8 @@ function createEngineTweakingsParentBridge(ctx) {
             }
             try {
                 const payload = {
-                    A: Object.fromEntries(KNOB_KEYS.map((k) => [k, Settings.AI.A[k]])),
-                    B: Object.fromEntries(KNOB_KEYS.map((k) => [k, Settings.AI.B[k]]))
+                    A: readTeamUiKnobs(Settings.AI.A, Settings.AI),
+                    B: readTeamUiKnobs(Settings.AI.B, Settings.AI)
                 };
                 localStorage.setItem('ai_strategy_settings_team_split', JSON.stringify(payload));
             } catch (_) { /* ignore */ }
@@ -263,8 +259,8 @@ function createEngineTweakingsParentBridge(ctx) {
         }
 
         const features = [
-            'width=800',
-            'height=780',
+            'width=860',
+            'height=920',
             'menubar=no',
             'toolbar=no',
             'location=no',

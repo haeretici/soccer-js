@@ -198,9 +198,13 @@ function computeAttackSupportTarget(player, carrier, level) {
     const sign = getCarrierForwardSign(level, carrier.team);
     const lane = getAttackLaneOffset(player, field);
     const phaseMods = getPlayPhaseModsForPlayer(carrier || player);
-    const intensity = ai(player).ATTACK_SUPPORT_INTENSITY * (phaseMods.supportDepthMult || 1);
-    const push = Utils.scaleFieldX(lane.xPushRef) * intensity;
-    const minAhead = Utils.scaleFieldX(6.25 * Math.min(1.15, phaseMods.supportDepthMult || 1));
+    const teamAi = ai(player);
+    const intensity = teamAi.ATTACK_SUPPORT_INTENSITY * (phaseMods.supportDepthMult || 1);
+    const pushScale = typeof teamAi.ATTACK_SUPPORT_PUSH_SCALE === 'number'
+        ? teamAi.ATTACK_SUPPORT_PUSH_SCALE
+        : 1;
+    const push = Utils.scaleFieldX(lane.xPushRef) * intensity * pushScale;
+    const minAhead = Utils.scaleFieldX(6.25 * Math.min(1.15, phaseMods.supportDepthMult || 1) * Math.min(1.25, pushScale));
     const margin = 0.5 * field.multiplier;
 
     let supportX = carrier.x + sign * push;
@@ -208,7 +212,9 @@ function computeAttackSupportTarget(player, carrier, level) {
     else supportX = Math.min(supportX, carrier.x - minAhead);
 
     // Progress phase: stretch wider; build: stay more central/compact
-    const widthMult = phaseMods.supportWidthMult || 1;
+    // SUPPORT_WIDTH scales lateral stretch relative to default 0.55 (1× = legacy lanes)
+    const supportWidth = typeof teamAi.SUPPORT_WIDTH === 'number' ? teamAi.SUPPORT_WIDTH : 0.55;
+    const widthMult = (phaseMods.supportWidthMult || 1) * (supportWidth / 0.55);
     const laneY = player.baseY + Utils.scaleFieldY(lane.yBiasRef) * widthMult;
     const carrierYBlend = Math.min(0.34, 0.22 + intensity * 0.15);
     let supportY = laneY * (1 - carrierYBlend) + carrier.y * carrierYBlend;
@@ -226,12 +232,16 @@ function computeAttackSupportTarget(player, carrier, level) {
 
     const teamEnt = getTeamEntity(player);
     const depthX = teamEnt ? teamEnt.getDepthWorldOffset(player) : 0;
-    const hold = teamEnt ? teamEnt.getEffectiveFormationHold() : ai(player).FORMATION_HOLD;
+    const hold = teamEnt ? teamEnt.getEffectiveFormationHold() : teamAi.FORMATION_HOLD;
     const form = {
         x: player.baseX + depthX + (ballShiftX(level) * (1 - hold * 0.8)),
         y: player.baseY + (ballShiftY(level) * (1 - hold * 0.8))
     };
-    const formWeight = hold * 0.45 + (1 - intensity) * 0.35;
+    // formWeight: legacy hold/intensity terms × ATTACK_SUPPORT_FORM_PULL (1 = prior behaviour)
+    const formPull = typeof teamAi.ATTACK_SUPPORT_FORM_PULL === 'number'
+        ? teamAi.ATTACK_SUPPORT_FORM_PULL
+        : 1;
+    const formWeight = Math.max(0, Math.min(1, (hold * 0.45 + (1 - intensity) * 0.35) * formPull));
 
     return {
         x: Math.max(margin, Math.min(field.width - margin, form.x * formWeight + supportX * (1 - formWeight))),
