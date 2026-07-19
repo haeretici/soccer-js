@@ -10,6 +10,34 @@
         'DEFENSIVE_PRESS_INTENSITY',
         'PASS_AGGRESSION'
     ];
+    const AI_SLIDER_IDS = {
+        A: {
+            FORMATION_HOLD: 'formationHoldSliderA',
+            ATTACK_SUPPORT_INTENSITY: 'attackSupportSliderA',
+            DEFENSIVE_PRESS_INTENSITY: 'defensivePressSliderA',
+            PASS_AGGRESSION: 'passAggressionSliderA'
+        },
+        B: {
+            FORMATION_HOLD: 'formationHoldSliderB',
+            ATTACK_SUPPORT_INTENSITY: 'attackSupportSliderB',
+            DEFENSIVE_PRESS_INTENSITY: 'defensivePressSliderB',
+            PASS_AGGRESSION: 'passAggressionSliderB'
+        }
+    };
+    const AI_VAL_IDS = {
+        A: {
+            FORMATION_HOLD: 'formationHoldValA',
+            ATTACK_SUPPORT_INTENSITY: 'attackSupportValA',
+            DEFENSIVE_PRESS_INTENSITY: 'defensivePressValA',
+            PASS_AGGRESSION: 'passAggressionValA'
+        },
+        B: {
+            FORMATION_HOLD: 'formationHoldValB',
+            ATTACK_SUPPORT_INTENSITY: 'attackSupportValB',
+            DEFENSIVE_PRESS_INTENSITY: 'defensivePressValB',
+            PASS_AGGRESSION: 'passAggressionValB'
+        }
+    };
 
     const parent = window.opener;
     if (!parent || parent.closed) {
@@ -22,6 +50,8 @@
 
     let state = null;
     let suppress = false;
+    let aiArchetypes = {};
+    let archetypesReady = false;
 
     function post(msg) {
         try {
@@ -33,6 +63,99 @@
 
     function byId(id) {
         return document.getElementById(id);
+    }
+
+    function readTeamAI(team) {
+        const out = {};
+        for (const key of KNOB_KEYS) {
+            const slider = byId(AI_SLIDER_IDS[team][key]);
+            out[key] = slider ? parseFloat(slider.value) : 0.5;
+        }
+        return out;
+    }
+
+    function collectBothTeamsAI() {
+        return { A: readTeamAI('A'), B: readTeamAI('B') };
+    }
+
+    function matchArchetype(aiBlock) {
+        for (const [id, arch] of Object.entries(aiArchetypes)) {
+            const matches = KNOB_KEYS.every((key) => Math.abs((aiBlock[key] ?? -1) - arch[key]) < 0.001);
+            if (matches) return id;
+        }
+        return 'custom';
+    }
+
+    function updateArchetypeDescription(team, archId) {
+        const row = byId('aiArchetypeDescRow' + team);
+        const textarea = byId('aiArchetypeDesc' + team);
+        if (!row || !textarea) return;
+
+        if (archId && archId !== 'custom') {
+            const arch = aiArchetypes[archId];
+            textarea.value = arch ? arch.description : '';
+            row.classList.remove('d-none');
+        } else {
+            textarea.value = '';
+            row.classList.add('d-none');
+        }
+    }
+
+    function syncArchetypeSelect(team) {
+        const select = byId('aiArchetypeSelect' + team);
+        if (!select) return;
+        const archId = matchArchetype(readTeamAI(team));
+        select.value = archId;
+        updateArchetypeDescription(team, archId);
+    }
+
+    function populateArchetypeSelect(select) {
+        if (!select) return;
+        // Keep the existing "Custom" option; append presets once
+        const existing = new Set(Array.from(select.options).map((o) => o.value));
+        Object.entries(aiArchetypes)
+            .sort((a, b) => a[1].label.localeCompare(b[1].label))
+            .forEach(([id, arch]) => {
+                if (existing.has(id)) return;
+                const opt = document.createElement('option');
+                opt.value = id;
+                opt.textContent = arch.label;
+                select.appendChild(opt);
+            });
+    }
+
+    function applyArchetypeToSliders(team, archetypeId) {
+        const arch = aiArchetypes[archetypeId];
+        if (!arch) return false;
+        for (const key of KNOB_KEYS) {
+            const slider = byId(AI_SLIDER_IDS[team][key]);
+            const valEl = byId(AI_VAL_IDS[team][key]);
+            if (slider) slider.value = arch[key];
+            if (valEl) valEl.innerText = Number(arch[key]).toFixed(2);
+        }
+        updateArchetypeDescription(team, archetypeId);
+        return true;
+    }
+
+    async function loadArchetypes() {
+        try {
+            const res = await fetch('/presets/ai_archetypes.json', { cache: 'no-cache' });
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            aiArchetypes = await res.json();
+        } catch (err) {
+            console.error('Failed to load AI archetypes:', err);
+            aiArchetypes = {};
+        }
+        populateArchetypeSelect(byId('aiArchetypeSelectA'));
+        populateArchetypeSelect(byId('aiArchetypeSelectB'));
+        archetypesReady = true;
+        // Re-sync selects if parent already pushed state
+        if (state && state.AI) {
+            suppress = true;
+            syncArchetypeSelect('A');
+            syncArchetypeSelect('B');
+            suppress = false;
+        }
     }
 
     function applyStateToForm(s) {
@@ -92,21 +215,14 @@
         const ai = s.AI || {};
         for (const team of ['A', 'B']) {
             const block = ai[team] || {};
-            const map = {
-                FORMATION_HOLD: ['formationHoldSlider' + team, 'formationHoldVal' + team],
-                ATTACK_SUPPORT_INTENSITY: ['attackSupportSlider' + team, 'attackSupportVal' + team],
-                DEFENSIVE_PRESS_INTENSITY: ['defensivePressSlider' + team, 'defensivePressVal' + team],
-                PASS_AGGRESSION: ['passAggressionSlider' + team, 'passAggressionVal' + team]
-            };
             for (const key of KNOB_KEYS) {
-                const ids = map[key];
-                if (!ids) continue;
-                const slider = byId(ids[0]);
-                const valEl = byId(ids[1]);
+                const slider = byId(AI_SLIDER_IDS[team][key]);
+                const valEl = byId(AI_VAL_IDS[team][key]);
                 const v = typeof block[key] === 'number' ? block[key] : 0.5;
                 if (slider) slider.value = v;
                 if (valEl) valEl.innerText = v.toFixed(2);
             }
+            if (archetypesReady) syncArchetypeSelect(team);
         }
 
         const dbg = s.debugAI || {};
@@ -197,6 +313,19 @@
             return patch;
         }
 
+        // AI archetype preset select
+        if (id === 'aiArchetypeSelectA' || id === 'aiArchetypeSelectB') {
+            const team = id.endsWith('A') ? 'A' : 'B';
+            const archId = target.value;
+            if (archId && archId !== 'custom') {
+                if (!applyArchetypeToSliders(team, archId)) return null;
+            } else {
+                updateArchetypeDescription(team, 'custom');
+            }
+            patch.AI = collectBothTeamsAI();
+            return patch;
+        }
+
         // AI knobs
         const team = id.endsWith('A') ? 'A' : id.endsWith('B') ? 'B' : null;
         if (team) {
@@ -211,16 +340,8 @@
                 const val = parseFloat(target.value);
                 const valId = id.replace('Slider', 'Val');
                 if (byId(valId)) byId(valId).innerText = val.toFixed(2);
-                patch.AI = { A: {}, B: {} };
-                // send full current team knobs for simplicity
-                for (const t of ['A', 'B']) {
-                    patch.AI[t] = {
-                        FORMATION_HOLD: parseFloat(byId('formationHoldSlider' + t)?.value || 0.55),
-                        ATTACK_SUPPORT_INTENSITY: parseFloat(byId('attackSupportSlider' + t)?.value || 0.65),
-                        DEFENSIVE_PRESS_INTENSITY: parseFloat(byId('defensivePressSlider' + t)?.value || 0.45),
-                        PASS_AGGRESSION: parseFloat(byId('passAggressionSlider' + t)?.value || 0.55)
-                    };
-                }
+                if (archetypesReady) syncArchetypeSelect(team);
+                patch.AI = collectBothTeamsAI();
                 return patch;
             }
         }
@@ -252,6 +373,9 @@
                 });
             });
         }
+
+        // Preset list from same JSON as batch builder
+        loadArchetypes();
 
         // Ask parent for live Settings (source of truth) — do not trust HTML defaults
         post({ type: 'ready' });
