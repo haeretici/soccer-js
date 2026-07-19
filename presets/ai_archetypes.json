@@ -1,0 +1,34 @@
+{
+  "tiki_taka": {
+    "label": "Tiki-Taka",
+    "description": "A style of play characterized by short passing and movement, working the ball through various channels, and maintaining possession.",
+    "FORMATION_HOLD": 0.30,
+    "ATTACK_SUPPORT_INTENSITY": 0.80,
+    "DEFENSIVE_PRESS_INTENSITY": 0.60,
+    "PASS_AGGRESSION": 0.80
+  },
+  "catenaccio": {
+    "label": "Catenaccio",
+    "description": "A highly organized and effective backline defense focused on closing down spatial lanes and preventing goal-scoring opportunities.",
+    "FORMATION_HOLD": 0.85,
+    "ATTACK_SUPPORT_INTENSITY": 0.20,
+    "DEFENSIVE_PRESS_INTENSITY": 0.40,
+    "PASS_AGGRESSION": 0.30
+  },
+  "gegenpressing": {
+    "label": "Gegenpressing",
+    "description": "An aggressive high-pressure tactical system that seeks to win the ball back immediately after possession is lost.",
+    "FORMATION_HOLD": 0.50,
+    "ATTACK_SUPPORT_INTENSITY": 0.70,
+    "DEFENSIVE_PRESS_INTENSITY": 0.90,
+    "PASS_AGGRESSION": 0.65
+  },
+  "structured_counter": {
+    "label": "Structured Counter",
+    "description": "A highly structured formation that maintains rigid defensive spacing and utilizes direct vertical passing to transition quickly into attack.",
+    "FORMATION_HOLD": 0.80,
+    "ATTACK_SUPPORT_INTENSITY": 0.20,
+    "DEFENSIVE_PRESS_INTENSITY": 0.80,
+    "PASS_AGGRESSION": 0.55
+  }
+}

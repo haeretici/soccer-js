@@ -1,0 +1,921 @@
+@use 'sass:color';
+@use 'variables' as *;
+
+// ─── Compact form controls ───────────────────────────────────────────────────
+
+.form-control-retro,
+.form-select-retro,
+.editor-app-container .form-control,
+.editor-app-container .form-select {
+  background-color: $bg-input;
+  border: 1px solid $border-color;
+  border-radius: 4px;
+  color: $text-main;
+  font-family: $font-mono;
+  font-size: 0.75rem;
+  padding: 3px 6px;
+  height: 26px;
+  min-height: 26px;
+  transition: all 0.15s ease-in-out;
+  color-scheme: dark;
+
+  &:focus {
+    background-color: #000;
+    border-color: $accent-secondary;
+    box-shadow: 0 0 6px rgba($accent-secondary, 0.3);
+    outline: none;
+    color: #fff;
+  }
+
+  &::placeholder {
+    color: rgba(255, 255, 255, 0.25);
+  }
+
+  &:disabled {
+    background-color: rgba(0, 0, 0, 0.3);
+    color: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.03);
+  }
+
+  option,
+  optgroup {
+    background-color: $bg-dark;
+    color: $text-main;
+  }
+}
+
+.form-select-retro,
+.editor-app-container .form-select {
+  padding-right: 20px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cpath d='M0 2l4 4 4-4z' fill='%239ca3af'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 6px center;
+  background-size: 8px 8px;
+  appearance: none;
+}
+
+// Multi-line inputs
+.editor-app-container textarea.form-control {
+  height: auto;
+  min-height: 2.5rem;
+  font-size: 0.72rem;
+  line-height: 1.35;
+}
+
+// File inputs need a bit more height
+.editor-app-container input[type='file'].form-control {
+  height: auto;
+  min-height: 28px;
+  padding: 3px 6px;
+  font-size: 0.68rem;
+}
+
+// Color pickers keep a square control (asset manager kit slots)
+.editor-app-container input[type='color'].form-control,
+.editor-app-container .form-control-color {
+  height: 28px;
+  min-height: 28px;
+  width: 28px;
+  padding: 2px;
+}
+
+.font-monospace {
+  font-family: $font-mono !important;
+}
+
+.label-retro {
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: $text-muted;
+  margin-bottom: 2px;
+  display: block;
+  font-family: $font-ui;
+  letter-spacing: 0.5px;
+}
+
+.editor-app-container .form-label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: $text-muted;
+  margin-bottom: 2px;
+  letter-spacing: 0.4px;
+}
+
+// ─── Compact buttons ─────────────────────────────────────────────────────────
+
+.btn-retro {
+  font-family: $font-ui;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 3px 10px;
+  height: 26px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  transition: all 0.15s ease-in-out;
+  cursor: pointer;
+  border: 1px solid transparent;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.85);
+  white-space: nowrap;
+  line-height: 1;
+
+  i {
+    font-size: 0.8rem;
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  &.btn-retro-primary {
+    background-color: rgba($accent-primary, 0.15);
+    border-color: rgba($accent-primary, 0.4);
+    color: #fff;
+
+    &:hover:not(:disabled) {
+      background-color: rgba($accent-primary, 0.3);
+      border-color: $accent-primary;
+      box-shadow: 0 0 8px rgba($accent-primary, 0.35);
+    }
+  }
+
+  &.btn-retro-secondary {
+    background-color: rgba(255, 255, 255, 0.04);
+    border-color: $border-color;
+    color: rgba(255, 255, 255, 0.8);
+
+    &:hover:not(:disabled) {
+      background-color: rgba(255, 255, 255, 0.08);
+      border-color: $border-color-hover;
+      color: #fff;
+    }
+  }
+
+  &.btn-retro-cyan {
+    background-color: rgba($accent-secondary, 0.1);
+    border-color: rgba($accent-secondary, 0.35);
+    color: #fff;
+
+    &:hover:not(:disabled) {
+      background-color: rgba($accent-secondary, 0.22);
+      border-color: $accent-secondary;
+      box-shadow: 0 0 8px rgba($accent-secondary, 0.3);
+    }
+  }
+
+  &.btn-retro-success {
+    background-color: rgba($accent-success, 0.08);
+    border-color: rgba($accent-success, 0.35);
+    color: #fff;
+
+    &:hover:not(:disabled) {
+      background-color: rgba($accent-success, 0.18);
+      border-color: $accent-success;
+      box-shadow: 0 0 8px rgba($accent-success, 0.3);
+    }
+  }
+
+  &.btn-retro-warning {
+    background-color: rgba($accent-warning, 0.1);
+    border-color: rgba($accent-warning, 0.35);
+    color: #fff;
+
+    &:hover:not(:disabled) {
+      background-color: rgba($accent-warning, 0.2);
+      border-color: $accent-warning;
+      box-shadow: 0 0 8px rgba($accent-warning, 0.3);
+    }
+  }
+
+  &.btn-retro-danger {
+    background-color: rgba($accent-danger, 0.1);
+    border-color: rgba($accent-danger, 0.35);
+    color: #fff;
+
+    &:hover:not(:disabled) {
+      background-color: rgba($accent-danger, 0.2);
+      border-color: $accent-danger;
+      box-shadow: 0 0 8px rgba($accent-danger, 0.3);
+    }
+  }
+
+  &.btn-retro-icon-only {
+    width: 26px;
+    min-width: 26px;
+    padding: 0;
+  }
+}
+
+// Compact Bootstrap buttons inside editor shell
+.editor-app-container .btn {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 3px 10px;
+  min-height: 26px;
+  border-radius: 4px;
+  line-height: 1.2;
+}
+
+// Primary play button (compact gradient)
+.btn-custom-play {
+  background: linear-gradient(135deg, $accent-primary, #d90062);
+  color: #fff !important;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 12px;
+  min-height: 26px;
+  font-size: 0.75rem;
+  box-shadow: 0 2px 10px rgba($accent-primary, 0.3);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba($accent-primary, 0.45);
+    color: #fff !important;
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+// ─── Panel sections ──────────────────────────────────────────────────────────
+// flex-shrink: 0 — never crush Match Setup under Manual Control on short heights
+
+.panel-section {
+  border-bottom: 1px solid $border-color;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  min-height: auto;
+  background-color: $bg-dark;
+  position: relative;
+  z-index: 1;
+
+  .panel-section-header {
+    padding: 7px 10px;
+    background-color: rgba($bg-darkest, 0.25);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: $font-ui;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.72);
+    letter-spacing: 0.3px;
+    flex-shrink: 0;
+
+    .header-title {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      background: none;
+      -webkit-text-fill-color: rgba(255, 255, 255, 0.72);
+      text-transform: none;
+      text-shadow: none;
+    }
+
+    .chevron {
+      font-size: 0.65rem;
+      opacity: 0.55;
+      transition: transform 0.15s ease;
+    }
+  }
+
+  .panel-section-body {
+    padding: 10px 12px;
+  }
+
+  // Collapsible (native <details>)
+  &.panel-section--collapsible {
+    > summary.panel-section-header {
+      list-style: none;
+      cursor: pointer;
+      user-select: none;
+
+      &::-webkit-details-marker {
+        display: none;
+      }
+
+      &:hover {
+        background-color: rgba($bg-darkest, 0.45);
+        color: rgba(255, 255, 255, 0.9);
+      }
+    }
+
+    &:not([open]) > summary.panel-section-header .chevron {
+      transform: rotate(-90deg);
+    }
+
+    &[open] > summary.panel-section-header .chevron {
+      transform: rotate(0deg);
+    }
+  }
+}
+
+.sidebar-footer {
+  // Stay at end of content flow; do not create a flex gap that reorders panels
+  margin-top: 0;
+  flex-shrink: 0;
+  padding: 8px 12px;
+  border-top: 1px solid $border-color;
+  background-color: rgba($bg-darkest, 0.15);
+  font-family: $font-mono;
+  font-size: 0.65rem;
+  color: $text-muted;
+}
+
+// Desktop only: pin footer to bottom of right sidebar when there is spare height
+@media (min-width: 1101px) {
+  .editor-sidebar-right .sidebar-footer {
+    margin-top: auto;
+  }
+}
+
+.badge-retro {
+  font-family: $font-mono;
+  font-size: 0.65rem;
+  background-color: $bg-light;
+  border: 1px solid $border-color;
+  color: $text-main;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+// Glass panels (tool pages)
+.card.glass-panel {
+  background: $glass-bg;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid $glass-border;
+  border-radius: $glass-radius;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  transition: border-color 0.2s ease;
+  color: $text-main;
+
+  &:hover {
+    border-color: $glass-border-hover;
+  }
+
+  > .card-body {
+    padding: 0.85rem 1rem;
+  }
+
+  &:not(:has(> .card-body)) {
+    padding: 0.85rem 1rem;
+  }
+
+  .card-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 0.65rem;
+  }
+}
+
+// ─── Compact scoreboard (canvas toolbar) ─────────────────────────────────────
+
+.scoreboard-compact {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  width: 100%;
+  font-family: $font-display;
+
+  .score-side {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .score-team-name {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .score-value {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #fff;
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.35);
+    letter-spacing: -1px;
+    line-height: 1;
+    min-width: 1.4rem;
+    text-align: center;
+  }
+
+  .score-clock {
+    text-align: center;
+    padding: 0 12px;
+    border-left: 1px solid $border-color;
+    border-right: 1px solid $border-color;
+
+    .clock-label {
+      font-size: 0.55rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: $text-muted;
+      line-height: 1;
+      margin-bottom: 2px;
+    }
+
+    .match-timer {
+      font-size: 1.15rem;
+      font-weight: 900;
+      color: $accent-gold;
+      text-shadow: 0 0 8px rgba($accent-gold, 0.35);
+      line-height: 1;
+    }
+  }
+
+  img {
+    width: 22px;
+    height: 15px;
+    border-radius: 2px;
+    border: 1px solid $border-color;
+    flex-shrink: 0;
+  }
+}
+
+// Legacy scoreboard (widgets / fallbacks)
+.scoreboard {
+  background: $scoreboard-bg;
+  border: 1px solid rgba($accent-secondary, 0.45);
+  border-radius: $glass-radius;
+  font-family: $font-display;
+  padding: 0.5rem 0.75rem;
+  box-shadow: 0 0 10px rgba($accent-secondary, 0.12);
+}
+
+.score-value {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -1px;
+}
+
+.score-team-name {
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.match-timer {
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: $accent-gold;
+}
+
+.letter-spacing-1 {
+  letter-spacing: 1px;
+}
+
+// ─── Game canvas ─────────────────────────────────────────────────────────────
+
+// Matches #gameCanvas width/height attributes (logical resolution)
+$game-canvas-w: 720;
+$game-canvas-h: 528;
+
+.canvas-container {
+  position: relative;
+  background: #000;
+  border-radius: $glass-radius;
+  padding: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+
+  &:hover .fullscreen-btn {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+.fullscreen-btn {
+  position: absolute;
+  top: auto;
+  bottom: 12px;
+  right: 12px;
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  background: rgba(15, 17, 23, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, background-color 0.15s ease, border-color 0.15s ease, transform 0.15s ease, color 0.15s ease;
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  padding: 0;
+
+  svg {
+    width: 15px;
+    height: 15px;
+    fill: currentColor;
+  }
+
+  &:hover {
+    background: rgba(15, 17, 23, 0.9);
+    border-color: $accent-secondary;
+    color: #fff;
+    transform: scale(1.05);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+@mixin canvas-container-fullscreen {
+  width: 100vw;
+  height: 100vh;
+  max-width: 100%;
+  max-height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000 !important;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  overflow: hidden;
+
+  &::before {
+    display: none;
+  }
+
+  #gameCanvas,
+  canvas {
+    width: min(100vw, calc(100vh * #{$game-canvas-w} / #{$game-canvas-h})) !important;
+    height: min(100vh, calc(100vw * #{$game-canvas-h} / #{$game-canvas-w})) !important;
+    max-width: 100vw;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+
+  .fullscreen-btn {
+    top: auto;
+    bottom: 20px;
+    right: 20px;
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+.canvas-container:fullscreen {
+  @include canvas-container-fullscreen;
+}
+
+.canvas-container:-webkit-full-screen {
+  @include canvas-container-fullscreen;
+}
+
+.canvas-container:-moz-full-screen {
+  @include canvas-container-fullscreen;
+}
+
+.canvas-container:-ms-fullscreen {
+  @include canvas-container-fullscreen;
+}
+
+.canvas-container.is-fullscreen {
+  @include canvas-container-fullscreen;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+}
+
+#gameCanvas {
+  aspect-ratio: #{$game-canvas-w} / #{$game-canvas-h};
+  display: block;
+  background: $canvas-green;
+  image-rendering: auto;
+}
+
+#minimap {
+  background-color: $minimap-green;
+  border: 1px solid $border-color;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  border-radius: 3px;
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+// ─── Forms / switches ────────────────────────────────────────────────────────
+
+.form-check-input {
+  background-color: $bg-input;
+  border-color: $border-color;
+  cursor: pointer;
+
+  &:checked {
+    background-color: $accent-secondary;
+    border-color: $accent-secondary;
+  }
+
+  &:focus {
+    box-shadow: 0 0 6px rgba($accent-secondary, 0.4);
+    border-color: $accent-secondary;
+  }
+}
+
+.editor-app-container .form-check {
+  min-height: 0;
+  margin-bottom: 0.2rem;
+  padding-left: 1.4em;
+
+  .form-check-input {
+    margin-top: 0.2em;
+    width: 0.9em;
+    height: 0.9em;
+  }
+
+  .form-check-label {
+    font-size: 0.72rem;
+    cursor: pointer;
+    user-select: none;
+    line-height: 1.3;
+  }
+}
+
+.form-range {
+  height: 1rem;
+
+  &::-webkit-slider-thumb {
+    background: $accent-secondary;
+  }
+
+  &::-moz-range-thumb {
+    background: $accent-secondary;
+  }
+}
+
+.form-check-label {
+  cursor: pointer;
+  user-select: none;
+}
+
+// Engine Tweakings tooltips
+.tweak-tip-btn {
+  line-height: 1;
+  color: $accent-secondary;
+  opacity: 0.75;
+  text-decoration: none;
+  vertical-align: middle;
+
+  &:hover,
+  &:focus {
+    color: $accent-secondary;
+    opacity: 1;
+  }
+
+  &:focus-visible {
+    outline: 1px solid $accent-secondary;
+    outline-offset: 2px;
+    border-radius: 50%;
+  }
+}
+
+.tooltip.tweak-tooltip .tooltip-inner {
+  color: #ffffff;
+  max-width: 300px;
+  padding: 0.55rem 0.75rem;
+  text-align: left;
+  font-size: 0.8rem;
+  font-weight: 400;
+  line-height: 1.45;
+  letter-spacing: 0;
+  text-transform: none;
+  background: $tooltip-bg;
+  border: 1px solid rgba($accent-secondary, 0.25);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+
+  strong {
+    color: $accent-secondary;
+    font-weight: 600;
+  }
+}
+
+.tooltip.tweak-tooltip .tooltip-arrow::before {
+  border-top-color: $tooltip-bg;
+}
+
+.tooltip.tweak-tooltip.bs-tooltip-bottom .tooltip-arrow::before {
+  border-bottom-color: $tooltip-bg;
+}
+
+.tooltip.tweak-tooltip.bs-tooltip-start .tooltip-arrow::before {
+  border-left-color: $tooltip-bg;
+}
+
+.tooltip.tweak-tooltip.bs-tooltip-end .tooltip-arrow::before {
+  border-right-color: $tooltip-bg;
+}
+
+// Telemetry
+.telemetry-label {
+  font-family: $font-mono;
+  font-size: 0.62rem;
+  color: $text-muted;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.telemetry-value {
+  font-family: $font-mono;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: $accent-secondary;
+  line-height: 1.2;
+}
+
+// Simulation builder / analysis
+pre.cmd-block {
+  background: $cmd-block-bg;
+  border: 1px solid $glass-border;
+  border-radius: 4px;
+  padding: 0.65rem 0.75rem;
+  color: color.adjust($accent-secondary, $lightness: 10%);
+  font-size: 0.72rem;
+  font-family: $font-mono;
+  white-space: pre-wrap;
+  word-break: break-all;
+  max-height: 280px;
+  overflow: auto;
+  margin-bottom: 0.5rem;
+}
+
+.metric-card {
+  background: $metric-card-bg;
+  border: 1px solid $glass-border;
+  border-radius: $glass-radius;
+  padding: 0.65rem 0.5rem;
+  text-align: center;
+}
+
+.metric-value {
+  font-family: $font-display;
+  font-size: 1.25rem;
+  color: $accent-secondary;
+  line-height: 1.2;
+}
+
+.chart-wrap {
+  position: relative;
+  height: 220px;
+}
+
+.raw-summary-scroll {
+  max-height: 200px;
+  overflow: auto;
+}
+
+// ─── Drag & drop upload zones (Analyze Results) ──────────────────────────────
+
+.drop-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-height: 110px;
+  padding: 16px 12px;
+  margin: 0;
+  cursor: pointer;
+  text-align: center;
+  border: 1.5px dashed rgba($accent-secondary, 0.28);
+  border-radius: $glass-radius;
+  background: rgba($bg-dark, 0.85);
+  transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+  user-select: none;
+
+  &:hover {
+    border-color: rgba($accent-secondary, 0.55);
+    background: rgba($bg-light, 0.35);
+  }
+
+  &.is-dragover {
+    border-color: $accent-secondary;
+    border-style: solid;
+    background: rgba($accent-secondary, 0.08);
+    box-shadow: 0 0 16px rgba($accent-secondary, 0.18);
+  }
+
+  &.is-loaded {
+    border-color: rgba($accent-success, 0.45);
+    border-style: solid;
+
+    .drop-zone__icon {
+      color: $accent-success;
+    }
+  }
+
+  &__input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  // Keep the label a positioning context for the visually-hidden input
+  position: relative;
+
+  &__icon {
+    font-size: 1.35rem;
+    color: $accent-secondary;
+    opacity: 0.85;
+    line-height: 1;
+  }
+
+  &__title {
+    font-family: $font-mono;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: $text-main;
+    letter-spacing: 0.3px;
+  }
+
+  &__hint {
+    font-size: 0.68rem;
+    color: $text-muted;
+  }
+
+  &__file {
+    margin-top: 4px;
+    min-height: 1em;
+    color: $accent-secondary;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+#simulation-analysis-app {
+  #uploadZones {
+    // Stay visible under the menu even after charts load
+    position: relative;
+    z-index: 2;
+  }
+}
+
+// Compact gaps inside sidebars
+.editor-sidebar-left,
+.editor-sidebar-right {
+  .mb-3 {
+    margin-bottom: 0.55rem !important;
+  }
+
+  .mb-4 {
+    margin-bottom: 0.75rem !important;
+  }
+
+  .mb-2 {
+    margin-bottom: 0.35rem !important;
+  }
+
+  .g-2 {
+    --bs-gutter-y: 0.35rem;
+    --bs-gutter-x: 0.4rem;
+  }
+
+  .g-3 {
+    --bs-gutter-y: 0.45rem;
+    --bs-gutter-x: 0.5rem;
+  }
+}

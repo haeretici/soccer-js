@@ -1,0 +1,9 @@
+# Enforce LF line endings for all text files across all platforms
+* text=auto eol=lf
+
+# Explicitly mark binary files to prevent git from modifying their bytes
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary

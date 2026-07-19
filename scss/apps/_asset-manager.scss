@@ -1,0 +1,73 @@
+#asset-manager-app {
+  .canvas-preview-wrapper {
+    background: #000;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 260px;
+    position: relative;
+  }
+
+  #previewCanvas {
+    image-rendering: pixelated;
+    background: #1e3f1e;
+    border-radius: 4px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
+    max-width: 100%;
+  }
+
+  .sheet-container {
+    overflow: auto;
+    max-height: 320px;
+    background: #05070f;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 10px;
+    position: relative;
+  }
+
+  #sheetCanvas {
+    image-rendering: pixelated;
+    cursor: pointer;
+    display: block;
+  }
+
+  .color-dot {
+    width: 18px;
+    height: 18px;
+    border-radius: 3px;
+    display: inline-block;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    cursor: pointer;
+    vertical-align: middle;
+  }
+
+  .radial-dir-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50% !important;
+    font-size: 0.65rem;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #loadingOverlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    border-radius: 6px;
+    color: #0dcaf0;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: bold;
+    font-size: 0.85rem;
+  }
+}

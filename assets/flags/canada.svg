@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400" width="800" height="400">
+  <rect width="200" height="400" fill="#FF0000"/>
+  <rect x="200" width="400" height="400" fill="#FFFFFF"/>
+  <rect x="600" width="200" height="400" fill="#FF0000"/>
+  <!-- Simplified maple leaf shape -->
+  <polygon points="400,100 420,150 450,140 435,180 470,210 420,210 400,280 380,210 330,210 365,180 350,140 380,150" fill="#FF0000"/>
+</svg>

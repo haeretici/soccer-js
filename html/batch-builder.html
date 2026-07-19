@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Batch Builder — Soccer Engine</title>
+    <link rel="icon" href="/favicon.ico">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="/build/app.css" rel="stylesheet">
+</head>
+<body id="batch-builder-app">
+
+<div class="editor-app-container">
+
+    <header class="editor-header-bar">
+        <a class="brand" href="index.html">
+            <i class="fa-solid fa-futbol"></i> Soccer Engine
+        </a>
+        <nav class="menu-items d-none d-sm-flex">
+            <a class="menu-item" href="index.html">Match Simulator</a>
+            <a class="menu-item active" href="batch-builder.html">Batch Builder</a>
+            <a class="menu-item" href="simulation-analysis.html">Analyze Results</a>
+            <a class="menu-item" href="asset-manager.html">Asset Manager</a>
+            <a class="menu-item" href="tests.html">Scenario Lab</a>
+        </nav>
+        <div class="global-actions">
+            <span class="badge-retro">Headless CLI</span>
+        </div>
+    </header>
+
+    <div class="editor-workspace editor-workspace--scroll">
+        <div class="editor-content">
+            <p class="text-muted text-xxs mb-3">
+                Compose headless JSON config and copy the CLI command. Run from project root.
+            </p>
+
+            <div class="row g-3">
+                <div class="col-lg-6">
+                    <div class="card glass-panel">
+                        <div class="card-body">
+                            <h5 class="card-title text-info">
+                                <i class="fa-solid fa-gears me-1"></i> Match &amp; Batch Settings
+                            </h5>
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <label class="label-retro" for="iterations">Iterations</label>
+                                    <input type="number" class="form-control form-control-retro" id="iterations" min="1" max="10000" value="10">
+                                </div>
+                                <div class="col-6">
+                                    <label class="label-retro" for="seed">Seed</label>
+                                    <input type="number" class="form-control form-control-retro" id="seed" value="42">
+                                </div>
+                                <div class="col-6">
+                                    <label class="label-retro" for="teamA">Team A</label>
+                                    <select class="form-select form-select-retro" id="teamA"></select>
+                                </div>
+                                <div class="col-6">
+                                    <label class="label-retro" for="teamB">Team B</label>
+                                    <select class="form-select form-select-retro" id="teamB"></select>
+                                </div>
+                                <div class="col-6">
+                                    <label class="label-retro" for="concurrency">Concurrency</label>
+                                    <input type="number" class="form-control form-control-retro" id="concurrency" min="1" max="32" value="5"
+                                           title="Number of Node worker processes (default 5).">
+                                </div>
+                                <div class="col-6">
+                                    <label class="label-retro" for="formationA">Formation A</label>
+                                    <select class="form-select form-select-retro" id="formationA">
+                                        <option value="4-4-2" selected>4-4-2</option>
+                                        <option value="4-3-3">4-3-3</option>
+                                        <option value="3-5-2">3-5-2</option>
+                                        <option value="4-2-3-1">4-2-3-1</option>
+                                        <option value="4-1-4-1">4-1-4-1</option>
+                                        <option value="5-3-2">5-3-2</option>
+                                        <option value="3-4-3">3-4-3</option>
+                                        <option value="4-5-1">4-5-1</option>
+                                    </select>
+                                </div>
+                                <div class="col-6">
+                                    <label class="label-retro" for="formationB">Formation B</label>
+                                    <select class="form-select form-select-retro" id="formationB">
+                                        <option value="4-4-2">4-4-2</option>
+                                        <option value="4-3-3" selected>4-3-3</option>
+                                        <option value="3-5-2">3-5-2</option>
+                                        <option value="4-2-3-1">4-2-3-1</option>
+                                        <option value="4-1-4-1">4-1-4-1</option>
+                                        <option value="5-3-2">5-3-2</option>
+                                        <option value="3-4-3">3-4-3</option>
+                                        <option value="4-5-1">4-5-1</option>
+                                    </select>
+                                </div>
+                                <div class="col-6">
+                                    <label class="label-retro" for="matchDurationSeconds">Duration (sec)</label>
+                                    <input type="number" class="form-control form-control-retro" id="matchDurationSeconds" min="60" max="5400" value="300">
+                                </div>
+                                <div class="col-6">
+                                    <label class="label-retro" for="fieldSizeMultiplier">Field Size ×</label>
+                                    <input type="number" class="form-control form-control-retro" id="fieldSizeMultiplier" min="0.25" max="10" step="0.25" value="1">
+                                </div>
+                                <div class="col-12">
+                                    <label class="label-retro" for="outputDir">Output Directory</label>
+                                    <input type="text" class="form-control form-control-retro" id="outputDir" value="simulations/output">
+                                </div>
+                            </div>
+
+                            <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mt-3 mb-2 border-bottom border-secondary border-opacity-25 pb-1">
+                                <span class="label-retro mb-0 text-info">Team A AI Strategy</span>
+                                <div class="d-flex align-items-center gap-2">
+                                    <label class="label-retro mb-0" for="aiArchetypeA">Preset</label>
+                                    <select class="form-select form-select-retro" id="aiArchetypeA" style="width: auto; min-width: 9rem;">
+                                        <option value="custom" selected>Custom</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="d-none mb-2" id="aiArchetypeDescRowA">
+                                <textarea id="aiArchetypeDescA" class="form-control form-control-retro text-info" rows="2" readonly></textarea>
+                            </div>
+                            <div class="row g-2 mb-2">
+                                <div class="col-6">
+                                    <label class="label-retro">Formation Hold <span id="formationHoldLblA">0.55</span></label>
+                                    <input type="range" class="form-range" id="formationHoldA" min="0" max="1" step="0.05" value="0.55">
+                                </div>
+                                <div class="col-6">
+                                    <label class="label-retro">Attack Support <span id="attackSupportLblA">0.65</span></label>
+                                    <input type="range" class="form-range" id="attackSupportA" min="0" max="1" step="0.05" value="0.65">
+                                </div>
+                                <div class="col-6">
+                                    <label class="label-retro">Defensive Press <span id="defensivePressLblA">0.45</span></label>
+                                    <input type="range" class="form-range" id="defensivePressA" min="0" max="1" step="0.05" value="0.45">
+                                </div>
+                                <div class="col-6">
+                                    <label class="label-retro">Pass Aggression <span id="passAggressionLblA">0.55</span></label>
+                                    <input type="range" class="form-range" id="passAggressionA" min="0" max="1" step="0.05" value="0.55">
+                                </div>
+                            </div>
+
+                            <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mt-2 mb-2 border-bottom border-secondary border-opacity-25 pb-1">
+                                <span class="label-retro mb-0 text-info">Team B AI Strategy</span>
+                                <div class="d-flex align-items-center gap-2">
+                                    <label class="label-retro mb-0" for="aiArchetypeB">Preset</label>
+                                    <select class="form-select form-select-retro" id="aiArchetypeB" style="width: auto; min-width: 9rem;">
+                                        <option value="custom" selected>Custom</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="d-none mb-2" id="aiArchetypeDescRowB">
+                                <textarea id="aiArchetypeDescB" class="form-control form-control-retro text-warning" rows="2" readonly></textarea>
+                            </div>
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <label class="label-retro">Formation Hold <span id="formationHoldLblB">0.55</span></label>
+                                    <input type="range" class="form-range" id="formationHoldB" min="0" max="1" step="0.05" value="0.55">
+                                </div>
+                                <div class="col-6">
+                                    <label class="label-retro">Attack Support <span id="attackSupportLblB">0.65</span></label>
+                                    <input type="range" class="form-range" id="attackSupportB" min="0" max="1" step="0.05" value="0.65">
+                                </div>
+                                <div class="col-6">
+                                    <label class="label-retro">Defensive Press <span id="defensivePressLblB">0.45</span></label>
+                                    <input type="range" class="form-range" id="defensivePressB" min="0" max="1" step="0.05" value="0.45">
+                                </div>
+                                <div class="col-6">
+                                    <label class="label-retro">Pass Aggression <span id="passAggressionLblB">0.55</span></label>
+                                    <input type="range" class="form-range" id="passAggressionB" min="0" max="1" step="0.05" value="0.55">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="card glass-panel mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title text-info">
+                                <i class="fa-solid fa-code me-1"></i> JSON Config Preview
+                            </h5>
+                            <pre class="cmd-block" id="jsonPreview"></pre>
+                            <button class="btn btn-retro btn-retro-cyan me-1" id="copyJsonBtn" type="button">Copy JSON</button>
+                            <button class="btn btn-retro btn-retro-secondary" id="downloadConfigBtn" type="button">Download config.json</button>
+                        </div>
+                    </div>
+                    <div class="card glass-panel">
+                        <div class="card-body">
+                            <h5 class="card-title text-info">
+                                <i class="fa-solid fa-terminal me-1"></i> CLI Command
+                            </h5>
+                            <p class="text-xxs text-muted mb-2">For &gt;1000 iterations, use <code>SIMULATION.sh</code> instead.</p>
+                            <pre class="cmd-block" id="cliCommand"></pre>
+                            <button class="btn btn-retro btn-retro-cyan me-1" id="copyCliBtn" type="button">Copy Command</button>
+                            <button class="btn btn-retro btn-retro-warning" id="copySimShBtn" type="button">Copy SIMULATION.sh snippet</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="editor-statusbar">
+        <div class="status-group">
+            <div class="status-item">
+                <i class="fa-solid fa-circle text-info" style="font-size: 0.45rem;"></i>
+                <span>Batch Simulation Builder</span>
+            </div>
+            <div class="status-item d-sm-none">
+                <a class="text-info text-decoration-none" href="index.html">Match</a>
+                <span class="mx-1">·</span>
+                <a class="text-info text-decoration-none" href="simulation-analysis.html">Analyze</a>
+                <span class="mx-1">·</span>
+                <a class="text-info text-decoration-none" href="asset-manager.html">Assets</a>
+                <span class="mx-1">·</span>
+                <a class="text-info text-decoration-none" href="tests.html">Lab</a>
+            </div>
+        </div>
+        <div class="status-item">
+            <span>node scripts/run_batch_sim.js</span>
+        </div>
+    </footer>
+</div>
+
+<script src="/build/app.bundle.js?v=1.0.1"></script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 750 500" width="750" height="500">
+  <!-- 9 stripes -->
+  <rect width="750" height="55.5" fill="#FFFFFF"/>
+  <rect y="55.5" width="750" height="55.5" fill="#0081C6"/>
+  <rect y="111" width="750" height="55.5" fill="#FFFFFF"/>
+  <rect y="166.5" width="750" height="55.5" fill="#0081C6"/>
+  <rect y="222" width="750" height="55.5" fill="#FFFFFF"/>
+  <rect y="277.5" width="750" height="55.5" fill="#0081C6"/>
+  <rect y="333" width="750" height="55.5" fill="#FFFFFF"/>
+  <rect y="388.5" width="750" height="55.5" fill="#0081C6"/>
+  <rect y="444" width="750" height="56" fill="#FFFFFF"/>
+  <!-- Canton Sun -->
+  <rect width="200" height="222" fill="#FFFFFF"/>
+  <circle cx="100" cy="111" r="30" fill="#FFCC00"/>
+</svg>

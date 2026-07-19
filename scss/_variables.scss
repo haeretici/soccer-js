@@ -1,0 +1,51 @@
+// Brand accents
+$accent-primary: #ff0077;
+$accent-secondary: #00f2fe;
+$accent-gold: #ffcc00;
+$accent-success: #39ff14;
+$accent-warning: #ffb700;
+$accent-danger: #dc3545;
+
+// Compact editor palette (aligned with romdashboard)
+$bg-darkest: #0d0f14;
+$bg-dark: #151821;
+$bg-light: #1f2430;
+$bg-selected: #2b3242;
+$bg-input: #0a0c10;
+
+$body-bg: $bg-darkest;
+$text-main: #f3f4f6;
+$text-muted: rgba(255, 255, 255, 0.55);
+$text-muted-custom: #9ca3af;
+
+$border-color: rgba(255, 255, 255, 0.08);
+$border-color-hover: rgba(255, 255, 255, 0.16);
+$border-color-active: $accent-secondary;
+
+$glass-bg: rgba(21, 24, 33, 0.92);
+$glass-border: $border-color;
+$glass-border-hover: $border-color-hover;
+$input-bg: $bg-input;
+$input-bg-focus: #000;
+$scoreboard-bg: rgba(5, 7, 15, 0.92);
+$cmd-block-bg: rgba(5, 8, 18, 0.95);
+$metric-card-bg: rgba(8, 12, 24, 0.85);
+$tooltip-bg: rgba(12, 18, 36, 0.96);
+
+// Typography
+$font-ui: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+$font-mono: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+$font-title: 'Orbitron', sans-serif;
+$font-body: $font-ui;
+$font-display: $font-title;
+
+// Layout (romdashboard-style)
+$header-height: 38px;
+$statusbar-height: 24px;
+$sidebar-left-width: 280px;
+$sidebar-right-width: 240px;
+$canvas-toolbar-height: 52px;
+$glass-radius: 6px;
+
+$canvas-green: #2b5f2b;
+$minimap-green: #2b752b;

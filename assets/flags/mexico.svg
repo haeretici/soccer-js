@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 400" width="700" height="400">
+  <rect width="233" height="400" fill="#006847"/>
+  <rect x="233" width="234" height="400" fill="#FFFFFF"/>
+  <rect x="467" width="233" height="400" fill="#CE1126"/>
+  <!-- Eagle emblem placeholder -->
+  <circle cx="350" cy="200" r="30" fill="#8B5A2B"/>
+  <polygon points="350,160 360,180 340,180" fill="#FCD116"/>
+</svg>

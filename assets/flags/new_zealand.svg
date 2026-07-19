@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400" width="800" height="400">
+  <rect width="800" height="400" fill="#00247D"/>
+  <!-- Stars -->
+  <polygon points="600,100 605,115 590,115 602,125 598,140 610,130" fill="#FF0000" stroke="#FFFFFF" stroke-width="2"/>
+  <polygon points="650,200 655,215 640,215 652,225 648,240 660,230" fill="#FF0000" stroke="#FFFFFF" stroke-width="2"/>
+  <polygon points="580,280 585,295 570,295 582,305 578,320 590,310" fill="#FF0000" stroke="#FFFFFF" stroke-width="2"/>
+</svg>

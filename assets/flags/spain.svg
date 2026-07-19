@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 750 450" width="750" height="450">
+  <rect width="750" height="112.5" fill="#C60B1E"/>
+  <rect y="112.5" width="750" height="225" fill="#FCD116"/>
+  <rect y="337.5" width="750" height="112.5" fill="#C60B1E"/>
+  <!-- Simplified Pillars -->
+  <rect x="150" y="160" width="15" height="100" fill="#C60B1E"/>
+  <rect x="220" y="160" width="15" height="100" fill="#C60B1E"/>
+</svg>

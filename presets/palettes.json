@@ -1,0 +1,242 @@
+{
+  "Algeria": {
+    "flag": "dz",
+    "main": {"outline": "#000000", "primary": "#FFFFFF", "primaryLight": "#FFFFFF", "primaryDark": "#CDCDCD", "shorts": "#FFFFFF", "shortsDark": "#CFCFCF", "socks": "#FFFFFF"},
+    "gk":   {"outline": "#000000", "primary": "#FF9900", "primaryLight": "#FFC740", "primaryDark": "#CD6700", "shorts": "#000000", "shortsDark": "#000000", "socks": "#FF9900"}
+  },
+  "Argentina": {
+    "flag": "ar",
+    "main": {"outline": "#000000", "primary": "#75AADB", "primaryLight": "#A5CAFF", "primaryDark": "#4378A9", "shorts": "#000000", "shortsDark": "#000000", "socks": "#75AADB"},
+    "gk":   {"outline": "#000000", "primary": "#FF5500", "primaryLight": "#FF8540", "primaryDark": "#CD2300", "shorts": "#222222", "shortsDark": "#000000", "socks": "#FF5500"}
+  },
+  "Australia": {
+    "flag": "au",
+    "main": {"outline": "#000000", "primary": "#FFCC00", "primaryLight": "#FFEC40", "primaryDark": "#CD9A00", "shorts": "#006633", "shortsDark": "#003401", "socks": "#FFCC00"},
+    "gk":   {"outline": "#000000", "primary": "#000000", "primaryLight": "#404040", "primaryDark": "#000000", "shorts": "#000000", "shortsDark": "#000000", "socks": "#000000"}
+  },
+  "Austria": {
+    "flag": "at",
+    "main": {"outline": "#000000", "primary": "#EE2424", "primaryLight": "#FF6464", "primaryDark": "#BC0000", "shorts": "#FFFFFF", "shortsDark": "#CFCFCF", "socks": "#EE2424"},
+    "gk":   {"outline": "#000000", "primary": "#00FF88", "primaryLight": "#40FFC8", "primaryDark": "#00CD56", "shorts": "#000000", "shortsDark": "#000000", "socks": "#00FF88"}
+  },
+  "Belgium": {
+    "flag": "be",
+    "main": {"outline": "#000000", "primary": "#E30613", "primaryLight": "#FF4653", "primaryDark": "#B10000", "shorts": "#000000", "shortsDark": "#000000", "socks": "#E30613"},
+    "gk":   {"outline": "#000000", "primary": "#00D5FF", "primaryLight": "#40F5FF", "primaryDark": "#00A3CD", "shorts": "#000055", "shortsDark": "#000023", "socks": "#00D5FF"}
+  },
+  "Bosnia and Herzegovina": {
+    "flag": "ba",
+    "main": {"outline": "#000000", "primary": "#002F6C", "primaryLight": "#405FAC", "primaryDark": "#000D3A", "shorts": "#002F6C", "shortsDark": "#000D3A", "socks": "#002F6C"},
+    "gk":   {"outline": "#000000", "primary": "#FF0077", "primaryLight": "#FF40B7", "primaryDark": "#CD0045", "shorts": "#000000", "shortsDark": "#000000", "socks": "#FF0077"}
+  },
+  "Brazil": {
+    "flag": "br",
+    "main": {"outline": "#000000", "primary": "#FFCC00", "primaryLight": "#FFEC40", "primaryDark": "#CD9A00", "shorts": "#0022AA", "shortsDark": "#000078", "socks": "#FFFFFF"},
+    "gk":   {"outline": "#000000", "primary": "#33FF33", "primaryLight": "#73FF73", "primaryDark": "#01CD01", "shorts": "#000000", "shortsDark": "#000000", "socks": "#33FF33"}
+  },
+  "Cabo Verde": {
+    "flag": "cv",
+    "main": {"outline": "#000000", "primary": "#002A8F", "primaryLight": "#405ACF", "primaryDark": "#00005D", "shorts": "#002A8F", "shortsDark": "#00005D", "socks": "#002A8F"},
+    "gk":   {"outline": "#000000", "primary": "#FFCC00", "primaryLight": "#FFEC40", "primaryDark": "#CD9A00", "shorts": "#000000", "shortsDark": "#000000", "socks": "#FFCC00"}
+  },
+  "Canada": {
+    "flag": "ca",
+    "main": {"outline": "#000000", "primary": "#FF0000", "primaryLight": "#FF4040", "primaryDark": "#CD0000", "shorts": "#FF0000", "shortsDark": "#CD0000", "socks": "#FF0000"},
+    "gk":   {"outline": "#000000", "primary": "#333333", "primaryLight": "#737373", "primaryDark": "#010101", "shorts": "#333333", "shortsDark": "#030303", "socks": "#333333"}
+  },
+  "Colombia": {
+    "flag": "co",
+    "main": {"outline": "#000000", "primary": "#FCD116", "primaryLight": "#FFEF56", "primaryDark": "#CA9F00", "shorts": "#003893", "shortsDark": "#000661", "socks": "#CE1126"},
+    "gk":   {"outline": "#000000", "primary": "#FF00FF", "primaryLight": "#FF40FF", "primaryDark": "#CD00CD", "shorts": "#000000", "shortsDark": "#000000", "socks": "#FF00FF"}
+  },
+  "Congo DR": {
+    "flag": "cd",
+    "main": {"outline": "#000000", "primary": "#007FFF", "primaryLight": "#40AFFF", "primaryDark": "#004DCD", "shorts": "#007FFF", "shortsDark": "#004DCD", "socks": "#FCD116"},
+    "gk":   {"outline": "#000000", "primary": "#33FF33", "primaryLight": "#73FF73", "primaryDark": "#01CD01", "shorts": "#000000", "shortsDark": "#000000", "socks": "#33FF33"}
+  },
+  "Croatia": {
+    "flag": "hr",
+    "main": {"outline": "#000000", "primary": "#EE2424", "primaryLight": "#FF6464", "primaryDark": "#BC0000", "shorts": "#FFFFFF", "shortsDark": "#CFCFCF", "socks": "#EE2424"},
+    "gk":   {"outline": "#000000", "primary": "#00FFFF", "primaryLight": "#40FFFF", "primaryDark": "#00CDCD", "shorts": "#000000", "shortsDark": "#000000", "socks": "#00FFFF"}
+  },
+  "Curaçao": {
+    "flag": "cw",
+    "main": {"outline": "#000000", "primary": "#002B7F", "primaryLight": "#405BBF", "primaryDark": "#00094D", "shorts": "#002B7F", "shortsDark": "#00094D", "socks": "#002B7F"},
+    "gk":   {"outline": "#000000", "primary": "#FF5500", "primaryLight": "#FF8540", "primaryDark": "#CD2300", "shorts": "#000000", "shortsDark": "#000000", "socks": "#FF5500"}
+  },
+  "Czechia": {
+    "flag": "cz",
+    "main": {"outline": "#000000", "primary": "#FFFFFF", "primaryLight": "#FFFFFF", "primaryDark": "#CDCDCD", "shorts": "#D10F28", "shortsDark": "#9F0000", "socks": "#FFFFFF"},
+    "gk":   {"outline": "#000000", "primary": "#EE2424", "primaryLight": "#FF6464", "primaryDark": "#BC0000", "shorts": "#000000", "shortsDark": "#000000", "socks": "#EE2424"}
+  },
+  "Côte d'Ivoire": {
+    "flag": "ci",
+    "main": {"outline": "#000000", "primary": "#FF8200", "primaryLight": "#FFC240", "primaryDark": "#CD5000", "shorts": "#FF8200", "shortsDark": "#CD5000", "socks": "#FF8200"},
+    "gk":   {"outline": "#000000", "primary": "#009E60", "primaryLight": "#40CEA0", "primaryDark": "#006C2E", "shorts": "#000000", "shortsDark": "#000000", "socks": "#009E60"}
+  },
+  "Ecuador": {
+    "flag": "ec",
+    "main": {"outline": "#000000", "primary": "#FFDD00", "primaryLight": "#FFFD40", "primaryDark": "#CDAB00", "shorts": "#003893", "shortsDark": "#000661", "socks": "#CE1126"},
+    "gk":   {"outline": "#000000", "primary": "#00FF88", "primaryLight": "#40FFC8", "primaryDark": "#00CD56", "shorts": "#000000", "shortsDark": "#000000", "socks": "#00FF88"}
+  },
+  "Egypt": {
+    "flag": "eg",
+    "main": {"outline": "#000000", "primary": "#C8102E", "primaryLight": "#FF506E", "primaryDark": "#960000", "shorts": "#FFFFFF", "shortsDark": "#CFCFCF", "socks": "#000000"},
+    "gk":   {"outline": "#000000", "primary": "#FFCC00", "primaryLight": "#FFEC40", "primaryDark": "#CD9A00", "shorts": "#000000", "shortsDark": "#000000", "socks": "#FFCC00"}
+  },
+  "England": {
+    "flag": "gb-eng",
+    "main": {"outline": "#000000", "primary": "#FFFFFF", "primaryLight": "#FFFFFF", "primaryDark": "#CDCDCD", "shorts": "#000055", "shortsDark": "#000023", "socks": "#FFFFFF"},
+    "gk":   {"outline": "#000000", "primary": "#EEEE00", "primaryLight": "#FFFF40", "primaryDark": "#BCBC00", "shorts": "#000000", "shortsDark": "#000000", "socks": "#EEEE00"}
+  },
+  "France": {
+    "flag": "fr",
+    "main": {"outline": "#000000", "primary": "#002395", "primaryLight": "#4053D5", "primaryDark": "#000163", "shorts": "#FFFFFF", "shortsDark": "#CFCFCF", "socks": "#ED2939"},
+    "gk":   {"outline": "#000000", "primary": "#FFFF00", "primaryLight": "#FFFF40", "primaryDark": "#CDCD00", "shorts": "#000000", "shortsDark": "#000000", "socks": "#FFFF00"}
+  },
+  "Germany": {
+    "flag": "de",
+    "main": {"outline": "#000000", "primary": "#FFFFFF", "primaryLight": "#FFFFFF", "primaryDark": "#CDCDCD", "shorts": "#000000", "shortsDark": "#000000", "socks": "#FFFFFF"},
+    "gk":   {"outline": "#000000", "primary": "#00FFFF", "primaryLight": "#40FFFF", "primaryDark": "#00CDCD", "shorts": "#000055", "shortsDark": "#000023", "socks": "#00FFFF"}
+  },
+  "Ghana": {
+    "flag": "gh",
+    "main": {"outline": "#000000", "primary": "#FFFFFF", "primaryLight": "#FFFFFF", "primaryDark": "#CDCDCD", "shorts": "#FFFFFF", "shortsDark": "#CFCFCF", "socks": "#FFFFFF"},
+    "gk":   {"outline": "#000000", "primary": "#E30613", "primaryLight": "#FF4653", "primaryDark": "#B10000", "shorts": "#000000", "shortsDark": "#000000", "socks": "#E30613"}
+  },
+  "Haiti": {
+    "flag": "ht",
+    "main": {"outline": "#000000", "primary": "#00209F", "primaryLight": "#4060DF", "primaryDark": "#00006D", "shorts": "#00209F", "shortsDark": "#00006D", "socks": "#D21034"},
+    "gk":   {"outline": "#000000", "primary": "#FFFF00", "primaryLight": "#FFFF40", "primaryDark": "#CDCD00", "shorts": "#000000", "shortsDark": "#000000", "socks": "#FFFF00"}
+  },
+  "IR Iran": {
+    "flag": "ir",
+    "main": {"outline": "#000000", "primary": "#FFFFFF", "primaryLight": "#FFFFFF", "primaryDark": "#CDCDCD", "shorts": "#FFFFFF", "shortsDark": "#CFCFCF", "socks": "#FFFFFF"},
+    "gk":   {"outline": "#000000", "primary": "#FF0000", "primaryLight": "#FF4040", "primaryDark": "#CD0000", "shorts": "#000000", "shortsDark": "#000000", "socks": "#FF0000"}
+  },
+  "Iraq": {
+    "flag": "iq",
+    "main": {"outline": "#000000", "primary": "#007A3D", "primaryLight": "#40AA7D", "primaryDark": "#00480B", "shorts": "#FFFFFF", "shortsDark": "#CFCFCF", "socks": "#007A3D"},
+    "gk":   {"outline": "#000000", "primary": "#000000", "primaryLight": "#404040", "primaryDark": "#000000", "shorts": "#000000", "shortsDark": "#000000", "socks": "#000000"}
+  },
+  "Japan": {
+    "flag": "jp",
+    "main": {"outline": "#000000", "primary": "#004B87", "primaryLight": "#407BC7", "primaryDark": "#001955", "shorts": "#FFFFFF", "shortsDark": "#CFCFCF", "socks": "#004B87"},
+    "gk":   {"outline": "#000000", "primary": "#00FF66", "primaryLight": "#40FFA6", "primaryDark": "#00CD34", "shorts": "#000000", "shortsDark": "#000000", "socks": "#00FF66"}
+  },
+  "Jordan": {
+    "flag": "jo",
+    "main": {"outline": "#000000", "primary": "#FFFFFF", "primaryLight": "#FFFFFF", "primaryDark": "#CDCDCD", "shorts": "#000000", "shortsDark": "#000000", "socks": "#FFFFFF"},
+    "gk":   {"outline": "#000000", "primary": "#FF5500", "primaryLight": "#FF8540", "primaryDark": "#CD2300", "shorts": "#000000", "shortsDark": "#000000", "socks": "#FF5500"}
+  },
+  "Korea Republic": {
+    "flag": "kr",
+    "main": {"outline": "#000000", "primary": "#EA0029", "primaryLight": "#FF4069", "primaryDark": "#B80000", "shorts": "#000000", "shortsDark": "#000000", "socks": "#EA0029"},
+    "gk":   {"outline": "#000000", "primary": "#FFEE00", "primaryLight": "#FFFF40", "primaryDark": "#CDBC00", "shorts": "#000000", "shortsDark": "#000000", "socks": "#FFEE00"}
+  },
+  "Mexico": {
+    "flag": "mx",
+    "main": {"outline": "#000000", "primary": "#006847", "primaryLight": "#409887", "primaryDark": "#003615", "shorts": "#FFFFFF", "shortsDark": "#CFCFCF", "socks": "#CE1126"},
+    "gk":   {"outline": "#000000", "primary": "#FFCC00", "primaryLight": "#FFEC40", "primaryDark": "#CD9A00", "shorts": "#000000", "shortsDark": "#000000", "socks": "#FFCC00"}
+  },
+  "Morocco": {
+    "flag": "ma",
+    "main": {"outline": "#000000", "primary": "#C1272D", "primaryLight": "#FF676D", "primaryDark": "#8F0000", "shorts": "#006233", "shortsDark": "#003001", "socks": "#C1272D"},
+    "gk":   {"outline": "#000000", "primary": "#00FFCC", "primaryLight": "#40FFFF", "primaryDark": "#00CD9A", "shorts": "#000000", "shortsDark": "#000000", "socks": "#00FFCC"}
+  },
+  "Netherlands": {
+    "flag": "nl",
+    "main": {"outline": "#000000", "primary": "#FF4F00", "primaryLight": "#FF8F40", "primaryDark": "#CD1D00", "shorts": "#00205B", "shortsDark": "#000029", "socks": "#FF4F00"},
+    "gk":   {"outline": "#000000", "primary": "#33FF33", "primaryLight": "#73FF73", "primaryDark": "#01CD01", "shorts": "#000000", "shortsDark": "#000000", "socks": "#33FF33"}
+  },
+  "New Zealand": {
+    "flag": "nz",
+    "main": {"outline": "#000000", "primary": "#FFFFFF", "primaryLight": "#FFFFFF", "primaryDark": "#CDCDCD", "shorts": "#FFFFFF", "shortsDark": "#CFCFCF", "socks": "#FFFFFF"},
+    "gk":   {"outline": "#000000", "primary": "#000000", "primaryLight": "#404040", "primaryDark": "#000000", "shorts": "#000000", "shortsDark": "#000000", "socks": "#000000"}
+  },
+  "Norway": {
+    "flag": "no",
+    "main": {"outline": "#000000", "primary": "#BA0C2F", "primaryLight": "#FA4C6F", "primaryDark": "#880000", "shorts": "#FFFFFF", "shortsDark": "#CFCFCF", "socks": "#BA0C2F"},
+    "gk":   {"outline": "#000000", "primary": "#FFEE00", "primaryLight": "#FFFF40", "primaryDark": "#CDBC00", "shorts": "#000000", "shortsDark": "#000000", "socks": "#FFEE00"}
+  },
+  "Panama": {
+    "flag": "pa",
+    "main": {"outline": "#000000", "primary": "#DA121A", "primaryLight": "#FF525A", "primaryDark": "#A80000", "shorts": "#FFFFFF", "shortsDark": "#CFCFCF", "socks": "#DA121A"},
+    "gk":   {"outline": "#000000", "primary": "#00FF88", "primaryLight": "#40FFC8", "primaryDark": "#00CD56", "shorts": "#000000", "shortsDark": "#000000", "socks": "#00FF88"}
+  },
+  "Paraguay": {
+    "flag": "py",
+    "main": {"outline": "#000000", "primary": "#D52B1E", "primaryLight": "#FF6B5E", "primaryDark": "#A30000", "shorts": "#0038A8", "shortsDark": "#000676", "socks": "#FFFFFF"},
+    "gk":   {"outline": "#000000", "primary": "#00FFCC", "primaryLight": "#40FFFF", "primaryDark": "#00CD9A", "shorts": "#000000", "shortsDark": "#000000", "socks": "#00FFCC"}
+  },
+  "Portugal": {
+    "flag": "pt",
+    "main": {"outline": "#000000", "primary": "#E42518", "primaryLight": "#FF6558", "primaryDark": "#B20000", "shorts": "#046A38", "shortsDark": "#003806", "socks": "#E42518"},
+    "gk":   {"outline": "#000000", "primary": "#000000", "primaryLight": "#404040", "primaryDark": "#000000", "shorts": "#000000", "shortsDark": "#000000", "socks": "#000000"}
+  },
+  "Qatar": {
+    "flag": "qa",
+    "main": {"outline": "#000000", "primary": "#8A1538", "primaryLight": "#CA5578", "primaryDark": "#580006", "shorts": "#8A1538", "shortsDark": "#580006", "socks": "#8A1538"},
+    "gk":   {"outline": "#000000", "primary": "#FFFF00", "primaryLight": "#FFFF40", "primaryDark": "#CDCD00", "shorts": "#000000", "shortsDark": "#000000", "socks": "#FFFF00"}
+  },
+  "Saudi Arabia": {
+    "flag": "sa",
+    "main": {"outline": "#000000", "primary": "#FFFFFF", "primaryLight": "#FFFFFF", "primaryDark": "#CDCDCD", "shorts": "#006C35", "shortsDark": "#003A03", "socks": "#FFFFFF"},
+    "gk":   {"outline": "#000000", "primary": "#FF9900", "primaryLight": "#FFC940", "primaryDark": "#CD6700", "shorts": "#000000", "shortsDark": "#000000", "socks": "#FF9900"}
+  },
+  "Scotland": {
+    "flag": "gb-sct",
+    "main": {"outline": "#000000", "primary": "#0065BD", "primaryLight": "#4095FD", "primaryDark": "#00338B", "shorts": "#0065BD", "shortsDark": "#00338B", "socks": "#0065BD"},
+    "gk":   {"outline": "#000000", "primary": "#FFCC00", "primaryLight": "#FFEC40", "primaryDark": "#CD9A00", "shorts": "#000000", "shortsDark": "#000000", "socks": "#FFCC00"}
+  },
+  "Senegal": {
+    "flag": "sn",
+    "main": {"outline": "#000000", "primary": "#FFFFFF", "primaryLight": "#FFFFFF", "primaryDark": "#CDCDCD", "shorts": "#FFFFFF", "shortsDark": "#CFCFCF", "socks": "#FFFFFF"},
+    "gk":   {"outline": "#000000", "primary": "#FCD116", "primaryLight": "#FFFF56", "primaryDark": "#CA9F00", "shorts": "#000000", "shortsDark": "#000000", "socks": "#FCD116"}
+  },
+  "South Africa": {
+    "flag": "za",
+    "main": {"outline": "#000000", "primary": "#007A4D", "primaryLight": "#40AA8D", "primaryDark": "#00481B", "shorts": "#007A4D", "shortsDark": "#00481B", "socks": "#007A4D"},
+    "gk":   {"outline": "#000000", "primary": "#FF5500", "primaryLight": "#FF8540", "primaryDark": "#CD2300", "shorts": "#000000", "shortsDark": "#000000", "socks": "#FF5500"}
+  },
+  "Spain": {
+    "flag": "es",
+    "main": {"outline": "#000000", "primary": "#C60B1E", "primaryLight": "#FF4B5E", "primaryDark": "#940000", "shorts": "#002B7F", "shortsDark": "#00094D", "socks": "#C60B1E"},
+    "gk":   {"outline": "#000000", "primary": "#00FFCC", "primaryLight": "#40FFFF", "primaryDark": "#00CD9A", "shorts": "#000000", "shortsDark": "#000000", "socks": "#00FFCC"}
+  },
+  "Sweden": {
+    "flag": "se",
+    "main": {"outline": "#000000", "primary": "#FFCD00", "primaryLight": "#FFED40", "primaryDark": "#CD9B00", "shorts": "#006AA7", "shortsDark": "#003875", "socks": "#FFCD00"},
+    "gk":   {"outline": "#000000", "primary": "#FF00FF", "primaryLight": "#FF40FF", "primaryDark": "#CD00CD", "shorts": "#000000", "shortsDark": "#000000", "socks": "#FF00FF"}
+  },
+  "Switzerland": {
+    "flag": "ch",
+    "main": {"outline": "#000000", "primary": "#D52B1E", "primaryLight": "#FF6B5E", "primaryDark": "#A30000", "shorts": "#D52B1E", "shortsDark": "#A30000", "socks": "#D52B1E"},
+    "gk":   {"outline": "#000000", "primary": "#00FF66", "primaryLight": "#40FFA6", "primaryDark": "#00CD34", "shorts": "#000000", "shortsDark": "#000000", "socks": "#00FF66"}
+  },
+  "Tunisia": {
+    "flag": "tn",
+    "main": {"outline": "#000000", "primary": "#E70013", "primaryLight": "#FF4053", "primaryDark": "#B50000", "shorts": "#FFFFFF", "shortsDark": "#CFCFCF", "socks": "#E70013"},
+    "gk":   {"outline": "#000000", "primary": "#00FFCC", "primaryLight": "#40FFFF", "primaryDark": "#00CD9A", "shorts": "#000000", "shortsDark": "#000000", "socks": "#00FFCC"}
+  },
+  "Türkiye": {
+    "flag": "tr",
+    "main": {"outline": "#000000", "primary": "#E30A17", "primaryLight": "#FF4A57", "primaryDark": "#B10000", "shorts": "#E30A17", "shortsDark": "#B10000", "socks": "#E30A17"},
+    "gk":   {"outline": "#000000", "primary": "#00FF66", "primaryLight": "#40FFA6", "primaryDark": "#00CD34", "shorts": "#000000", "shortsDark": "#000000", "socks": "#00FF66"}
+  },
+  "United States": {
+    "flag": "us",
+    "main": {"outline": "#000000", "primary": "#FFFFFF", "primaryLight": "#FFFFFF", "primaryDark": "#CDCDCD", "shorts": "#002868", "shortsDark": "#000636", "socks": "#FFFFFF"},
+    "gk":   {"outline": "#000000", "primary": "#FF3333", "primaryLight": "#FF7373", "primaryDark": "#CD0101", "shorts": "#000000", "shortsDark": "#000000", "socks": "#FF3333"}
+  },
+  "Uruguay": {
+    "flag": "uy",
+    "main": {"outline": "#000000", "primary": "#0081C6", "primaryLight": "#40B1FF", "primaryDark": "#004F94", "shorts": "#FFFFFF", "shortsDark": "#CFCFCF", "socks": "#0081C6"},
+    "gk":   {"outline": "#000000", "primary": "#FF5500", "primaryLight": "#FF8540", "primaryDark": "#CD2300", "shorts": "#000000", "shortsDark": "#000000", "socks": "#FF5500"}
+  },
+  "Uzbekistan": {
+    "flag": "uz",
+    "main": {"outline": "#000000", "primary": "#FFFFFF", "primaryLight": "#FFFFFF", "primaryDark": "#CDCDCD", "shorts": "#FFFFFF", "shortsDark": "#CFCFCF", "socks": "#FFFFFF"},
+    "gk":   {"outline": "#000000", "primary": "#00FF66", "primaryLight": "#40FFA6", "primaryDark": "#00CD34", "shorts": "#000000", "shortsDark": "#000000", "socks": "#00FF66"}
+  }
+}

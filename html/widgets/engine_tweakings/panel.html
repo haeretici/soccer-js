@@ -1,0 +1,323 @@
+                    <div class="card-body">
+                    <h5 class="card-title mb-4 font-monospace"><i class="badge-live text-info fs-5">●</i> Engine Tweakings</h5>
+                    <div class="row g-4">
+                        <!-- Column 1: Camera Settings -->
+                        <div class="col-md-4">
+                            <h6 class="text-info border-bottom border-secondary border-opacity-50 pb-2 mb-3">Camera Settings</h6>
+
+                            <!-- Camera Type -->
+                            <div class="mb-3">
+                                <label class="small text-muted d-flex align-items-center gap-1 mb-1">
+                                    Camera Type
+                                    <button type="button" class="btn btn-link tweak-tip-btn p-0" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tweak-tooltip" aria-label="Camera Type help" data-bs-title="Centered keeps the view locked on the ball. Static uses a fixed frame — adjust Scale and Offset X/Y below to position the pitch.">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/><path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/></svg>
+                                    </button>
+                                </label>
+                                <select id="cameraTypeSelect" class="form-select">
+                                    <option value="centered" selected>Centered (Follow Ball)</option>
+                                    <option value="static">Static</option>
+                                </select>
+                            </div>
+
+                            <!-- Scale (Zoom) -->
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between mb-1 align-items-center">
+                                    <span class="small text-muted d-flex align-items-center gap-1">
+                                        Scale (Zoom)
+                                        <button type="button" class="btn btn-link tweak-tip-btn p-0" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tweak-tooltip" aria-label="Scale help" data-bs-title="Canvas zoom multiplier. Higher values crop in for a closer view; lower values show more of the pitch. Saved automatically.">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/><path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/></svg>
+                                        </button>
+                                    </span>
+                                    <span class="badge bg-secondary font-monospace" id="scaleVal">20</span>
+                                </div>
+                                <input type="range" class="form-range" id="scaleSlider" min="5" max="50" step="1" value="20">
+                            </div>
+
+                            <!-- Offset X -->
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between mb-1 align-items-center">
+                                    <span class="small text-muted d-flex align-items-center gap-1">
+                                        Offset X
+                                        <button type="button" class="btn btn-link tweak-tip-btn p-0" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tweak-tooltip" aria-label="Offset X help" data-bs-title="Horizontal pan in screen space. Only applies when Camera Type is Static — Centered (follow ball) ignores this offset.">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/><path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/></svg>
+                                        </button>
+                                    </span>
+                                    <span class="badge bg-secondary font-monospace" id="offsetXVal">40</span>
+                                </div>
+                                <input type="range" class="form-range" id="offsetXSlider" min="-200" max="200" step="5" value="40">
+                            </div>
+
+                            <!-- Offset Y -->
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between mb-1 align-items-center">
+                                    <span class="small text-muted d-flex align-items-center gap-1">
+                                        Offset Y
+                                        <button type="button" class="btn btn-link tweak-tip-btn p-0" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tweak-tooltip" aria-label="Offset Y help" data-bs-title="Vertical pan in screen space. Only applies when Camera Type is Static — Centered (follow ball) ignores this offset.">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/><path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/></svg>
+                                        </button>
+                                    </span>
+                                    <span class="badge bg-secondary font-monospace" id="offsetYVal">80</span>
+                                </div>
+                                <input type="range" class="form-range" id="offsetYSlider" min="-200" max="200" step="5" value="80">
+                            </div>
+                        </div>
+
+                        <!-- Column 2: Match Settings -->
+                        <div class="col-md-4 border-start border-secondary border-opacity-25">
+                            <h6 class="text-info border-bottom border-secondary border-opacity-50 pb-2 mb-3">Match Settings</h6>
+
+                            <!-- Match Duration -->
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between mb-1 align-items-center">
+                                    <span class="small text-muted d-flex align-items-center gap-1">
+                                        Match Length (Mins)
+                                        <button type="button" class="btn btn-link tweak-tip-btn p-0" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tweak-tooltip" aria-label="Match length help" data-bs-title="Regulation length for one half before full time (1–90 minutes). Updates the active match clock immediately and is saved for the next session.">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/><path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/></svg>
+                                        </button>
+                                    </span>
+                                    <span class="badge bg-secondary font-monospace" id="matchDurationVal">10</span>
+                                </div>
+                                <input type="range" class="form-range" id="matchDurationSlider" min="1" max="90" step="1" value="10">
+                            </div>
+
+                            <!-- Field Size -->
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between mb-1 align-items-center">
+                                    <span class="small text-muted d-flex align-items-center gap-1">
+                                        Field Size (×)
+                                        <button type="button" class="btn btn-link tweak-tip-btn p-0" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tweak-tooltip" aria-label="Field size help" data-bs-title="Multiplies the base 80×50 pitch. Formations, markings, and AI landmarks scale with it. Locked while a match is running — stop the match to change.">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/><path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/></svg>
+                                        </button>
+                                    </span>
+                                    <span class="badge bg-secondary font-monospace" id="fieldSizeVal">1.00</span>
+                                </div>
+                                <input type="range" class="form-range" id="fieldSizeSlider" min="0.25" max="10" step="0.25" value="1">
+                            </div>
+                        </div>
+
+                        <!-- Column 3: Audio Settings -->
+                        <div class="col-md-4 border-start border-secondary border-opacity-25">
+                            <h6 class="text-info border-bottom border-secondary border-opacity-50 pb-2 mb-3">Audio Settings</h6>
+                            <div class="form-check form-switch mb-3 d-flex align-items-center gap-1">
+                                <input class="form-check-input" type="checkbox" role="switch" id="muteSoundToggle">
+                                <label class="form-check-label text-muted small mb-0" for="muteSoundToggle">Mute All Sounds</label>
+                                <button type="button" class="btn btn-link tweak-tip-btn p-0" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tweak-tooltip" aria-label="Mute sounds help" data-bs-title="Silences all synthesized Web Audio effects (referee whistle, kicks, tackles, crowd). Your preference is saved across reloads.">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/><path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AI Strategy (full width) -->
+                    <div class="row g-4 mt-2 pt-3 border-top border-secondary border-opacity-25">
+                        <div class="col-12">
+                            <h6 class="text-info border-bottom border-secondary border-opacity-50 pb-2 mb-3 d-flex align-items-center gap-1">
+                                AI Strategy
+                                <button type="button" class="btn btn-link tweak-tip-btn p-0" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tweak-tooltip" data-bs-html="true" aria-label="AI Strategy help" data-bs-title="Tune how teams attack, defend, and pass. Sliders read live from the engine each frame — changes apply mid-match without restart. Values persist in your browser.">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/><path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/></svg>
+                                </button>
+                            </h6>
+                            <div class="d-flex flex-wrap align-items-center justify-content-between mb-3 gap-2">
+                                <p class="small text-muted mb-0">Sliders apply immediately during play (no restart needed).</p>
+                                <div class="form-check form-switch mb-0">
+                                    <input class="form-check-input" type="checkbox" id="dynamicStrategyToggle" checked>
+                                    <label class="form-check-label text-light small fw-semibold" for="dynamicStrategyToggle">
+                                        Dynamic Strategy Shifting
+                                        <button type="button" class="btn btn-link tweak-tip-btn p-0" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tweak-tooltip" data-bs-html="true" aria-label="Dynamic strategy help" data-bs-title="Managers dynamically adjust tactics late-game: losing teams shift to Gegenpressing, winning teams shift to Catenaccio in the 80th minute.">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/><path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/></svg>
+                                        </button>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Team A AI Strategy -->
+                        <div class="col-12 mb-2 d-flex flex-wrap align-items-center justify-content-between gap-2">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="small text-info fw-bold">Team A AI Strategy</span>
+                                <span id="teamAShiftBadge" class="badge badge-live bg-danger d-none" style="font-size: 0.7rem; letter-spacing: 0.05em;">GEGENPRESSING</span>
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <label class="small text-muted mb-0" for="aiArchetypeSelectA">Preset</label>
+                                <select id="aiArchetypeSelectA" class="form-select form-select-sm" style="width: auto; min-width: 11rem;">
+                                    <option value="custom" selected>Custom</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-12 d-none mb-2" id="aiArchetypeDescRowA">
+                            <textarea id="aiArchetypeDescA" class="form-control form-control-sm text-info bg-dark bg-opacity-25" style="border-color: rgba(0, 242, 254, 0.15); resize: none;" rows="2" readonly></textarea>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex justify-content-between mb-1 align-items-center">
+                                <span class="small text-muted">Formation Hold</span>
+                                <span class="badge bg-secondary font-monospace" id="formationHoldValA">0.55</span>
+                            </div>
+                            <input type="range" class="form-range" id="formationHoldSliderA" min="0" max="1" step="0.05" value="0.55">
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex justify-content-between mb-1 align-items-center">
+                                <span class="small text-muted">Attack Support</span>
+                                <span class="badge bg-secondary font-monospace" id="attackSupportValA">0.65</span>
+                            </div>
+                            <input type="range" class="form-range" id="attackSupportSliderA" min="0" max="1" step="0.05" value="0.65">
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex justify-content-between mb-1 align-items-center">
+                                <span class="small text-muted">Defensive Press</span>
+                                <span class="badge bg-secondary font-monospace" id="defensivePressValA">0.45</span>
+                            </div>
+                            <input type="range" class="form-range" id="defensivePressSliderA" min="0" max="1" step="0.05" value="0.45">
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex justify-content-between mb-1 align-items-center">
+                                <span class="small text-muted">Pass Aggression</span>
+                                <span class="badge bg-secondary font-monospace" id="passAggressionValA">0.55</span>
+                            </div>
+                            <input type="range" class="form-range" id="passAggressionSliderA" min="0" max="1" step="0.05" value="0.55">
+                        </div>
+
+                        <!-- Team B AI Strategy -->
+                        <div class="col-12 mt-3 mb-2 d-flex flex-wrap align-items-center justify-content-between gap-2">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="small text-warning fw-bold">Team B AI Strategy</span>
+                                <span id="teamBShiftBadge" class="badge badge-live bg-danger d-none" style="font-size: 0.7rem; letter-spacing: 0.05em;">GEGENPRESSING</span>
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <label class="small text-muted mb-0" for="aiArchetypeSelectB">Preset</label>
+                                <select id="aiArchetypeSelectB" class="form-select form-select-sm" style="width: auto; min-width: 11rem;">
+                                    <option value="custom" selected>Custom</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-12 d-none mb-2" id="aiArchetypeDescRowB">
+                            <textarea id="aiArchetypeDescB" class="form-control form-control-sm text-warning bg-dark bg-opacity-25" style="border-color: rgba(255, 193, 7, 0.15); resize: none;" rows="2" readonly></textarea>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex justify-content-between mb-1 align-items-center">
+                                <span class="small text-muted">Formation Hold</span>
+                                <span class="badge bg-secondary font-monospace" id="formationHoldValB">0.55</span>
+                            </div>
+                            <input type="range" class="form-range" id="formationHoldSliderB" min="0" max="1" step="0.05" value="0.55">
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex justify-content-between mb-1 align-items-center">
+                                <span class="small text-muted">Attack Support</span>
+                                <span class="badge bg-secondary font-monospace" id="attackSupportValB">0.65</span>
+                            </div>
+                            <input type="range" class="form-range" id="attackSupportSliderB" min="0" max="1" step="0.05" value="0.65">
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex justify-content-between mb-1 align-items-center">
+                                <span class="small text-muted">Defensive Press</span>
+                                <span class="badge bg-secondary font-monospace" id="defensivePressValB">0.45</span>
+                            </div>
+                            <input type="range" class="form-range" id="defensivePressSliderB" min="0" max="1" step="0.05" value="0.45">
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex justify-content-between mb-1 align-items-center">
+                                <span class="small text-muted">Pass Aggression</span>
+                                <span class="badge bg-secondary font-monospace" id="passAggressionValB">0.55</span>
+                            </div>
+                            <input type="range" class="form-range" id="passAggressionSliderB" min="0" max="1" step="0.05" value="0.55">
+                        </div>
+                    </div>
+
+                    <!-- AI Debug Overlays — canvas only; off by default / HEADLESS -->
+                    <div class="mt-4 pt-3 border-top border-secondary border-opacity-25">
+                        <h6 class="text-info border-bottom border-secondary border-opacity-50 pb-2 mb-3">
+                            AI Debug Overlays
+                            <span class="badge bg-secondary font-monospace ms-1" style="font-size: 0.65rem;">DEV</span>
+                        </h6>
+                        <p class="small text-muted mb-2">Canvas overlays for AI tuning (disabled in headless). Master switch required.</p>
+                        <div class="form-check form-switch mb-2">
+                            <input class="form-check-input" type="checkbox" id="aiDebugEnabled">
+                            <label class="form-check-label text-light small fw-semibold" for="aiDebugEnabled">Enable AI debug drawing</label>
+                        </div>
+                        <div class="row g-2 small" id="aiDebugFlagRow">
+                            <div class="col-md-4 col-6">
+                                <div class="form-check">
+                                    <input class="form-check-input ai-debug-flag" type="checkbox" id="aiDebugSupportSpots" data-flag="supportSpots">
+                                    <label class="form-check-label text-muted" for="aiDebugSupportSpots">Support spots</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-6">
+                                <div class="form-check">
+                                    <input class="form-check-input ai-debug-flag" type="checkbox" id="aiDebugRegions" data-flag="regions">
+                                    <label class="form-check-label text-muted" for="aiDebugRegions">Pitch regions</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-6">
+                                <div class="form-check">
+                                    <input class="form-check-input ai-debug-flag" type="checkbox" id="aiDebugHomeTargets" data-flag="homeTargets">
+                                    <label class="form-check-label text-muted" for="aiDebugHomeTargets">Home targets</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-6">
+                                <div class="form-check">
+                                    <input class="form-check-input ai-debug-flag" type="checkbox" id="aiDebugRoles" data-flag="roles">
+                                    <label class="form-check-label text-muted" for="aiDebugRoles">Key roles</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-6">
+                                <div class="form-check">
+                                    <input class="form-check-input ai-debug-flag" type="checkbox" id="aiDebugStates" data-flag="states">
+                                    <label class="form-check-label text-muted" for="aiDebugStates">FSM states</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-6">
+                                <div class="form-check">
+                                    <input class="form-check-input ai-debug-flag" type="checkbox" id="aiDebugThreatened" data-flag="threatened">
+                                    <label class="form-check-label text-muted" for="aiDebugThreatened">Threatened</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-6">
+                                <div class="form-check">
+                                    <input class="form-check-input ai-debug-flag" type="checkbox" id="aiDebugPassLanes" data-flag="passLanes">
+                                    <label class="form-check-label text-muted" for="aiDebugPassLanes">Pass lanes</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-6">
+                                <div class="form-check">
+                                    <input class="form-check-input ai-debug-flag" type="checkbox" id="aiDebugPositionTrace" data-flag="positionTrace">
+                                    <label class="form-check-label text-muted" for="aiDebugPositionTrace">Position stack</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-6">
+                                <div class="form-check">
+                                    <input class="form-check-input ai-debug-flag" type="checkbox" id="aiDebugMarking" data-flag="marking">
+                                    <label class="form-check-label text-muted" for="aiDebugMarking">Marking cover</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-6">
+                                <div class="form-check">
+                                    <input class="form-check-input ai-debug-flag" type="checkbox" id="aiDebugPlayPhase" data-flag="playPhase">
+                                    <label class="form-check-label text-muted" for="aiDebugPlayPhase">Play phase</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-6">
+                                <div class="form-check">
+                                    <input class="form-check-input ai-debug-flag" type="checkbox" id="aiDebugFreekickWall" data-flag="freekickWall">
+                                    <label class="form-check-label text-muted" for="aiDebugFreekickWall">Freekick wall</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-6">
+                                <div class="form-check">
+                                    <input class="form-check-input ai-debug-flag" type="checkbox" id="aiDebugOffsideLine" data-flag="offsideLine">
+                                    <label class="form-check-label text-muted" for="aiDebugOffsideLine">Offside line</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-6">
+                                <div class="form-check">
+                                    <input class="form-check-input ai-debug-flag" type="checkbox" id="aiDebugPredictedPath" data-flag="predictedPath">
+                                    <label class="form-check-label text-muted" for="aiDebugPredictedPath">Predicted ball</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-6">
+                                <div class="form-check">
+                                    <input class="form-check-input ai-debug-flag" type="checkbox" id="aiDebugGoalMouth" data-flag="goalMouth">
+                                    <label class="form-check-label text-muted" for="aiDebugGoalMouth">Goal mouth</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+                </div>

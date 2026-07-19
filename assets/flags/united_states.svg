@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 400" width="760" height="400">
+  <!-- 13 Stripes -->
+  <rect width="760" height="30.7" fill="#B22234"/>
+  <rect y="30.7" width="760" height="30.7" fill="#FFFFFF"/>
+  <rect y="61.4" width="760" height="30.7" fill="#B22234"/>
+  <rect y="92.1" width="760" height="30.7" fill="#FFFFFF"/>
+  <rect y="122.8" width="760" height="30.7" fill="#B22234"/>
+  <rect y="153.5" width="760" height="30.7" fill="#FFFFFF"/>
+  <rect y="184.2" width="760" height="30.7" fill="#B22234"/>
+  <rect y="214.9" width="760" height="30.7" fill="#FFFFFF"/>
+  <rect y="245.6" width="760" height="30.7" fill="#B22234"/>
+  <rect y="276.3" width="760" height="30.7" fill="#FFFFFF"/>
+  <rect y="307" width="760" height="30.7" fill="#B22234"/>
+  <rect y="337.7" width="760" height="30.7" fill="#FFFFFF"/>
+  <rect y="368.4" width="760" height="31.6" fill="#B22234"/>
+  <!-- Canton -->
+  <rect width="304" height="214.9" fill="#3C3B6E"/>
+  <circle cx="60" cy="50" r="4" fill="#FFFFFF"/>
+  <circle cx="120" cy="50" r="4" fill="#FFFFFF"/>
+  <circle cx="180" cy="50" r="4" fill="#FFFFFF"/>
+  <circle cx="240" cy="50" r="4" fill="#FFFFFF"/>
+  <circle cx="90" cy="100" r="4" fill="#FFFFFF"/>
+  <circle cx="150" cy="100" r="4" fill="#FFFFFF"/>
+  <circle cx="210" cy="100" r="4" fill="#FFFFFF"/>
+  <circle cx="60" cy="150" r="4" fill="#FFFFFF"/>
+  <circle cx="120" cy="150" r="4" fill="#FFFFFF"/>
+  <circle cx="180" cy="150" r="4" fill="#FFFFFF"/>
+  <circle cx="240" cy="150" r="4" fill="#FFFFFF"/>
+</svg>

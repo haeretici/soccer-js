@@ -1,0 +1,439 @@
+// Compact full-viewport editor shell (romdashboard-inspired)
+
+@use 'variables' as *;
+
+body {
+  background-color: $bg-darkest;
+  color: $text-main;
+  margin: 0;
+  padding: 0 !important;
+  overflow: hidden;
+  font-family: $font-ui;
+  color-scheme: dark;
+  min-height: 100vh;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: $bg-darkest;
+}
+::-webkit-scrollbar-thumb {
+  background: $bg-light;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: $bg-selected;
+}
+
+.editor-app-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  background-color: $bg-darkest;
+  overflow: hidden;
+}
+
+// Top Menu / Header Bar
+.editor-header-bar {
+  height: $header-height;
+  min-height: $header-height;
+  background-color: $bg-darkest;
+  border-bottom: 1px solid $border-color;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0.75rem;
+  z-index: 100;
+  user-select: none;
+  gap: 0.5rem;
+
+  .brand {
+    font-family: $font-title;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    background: linear-gradient(45deg, $accent-primary, $accent-secondary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+    text-decoration: none;
+    flex-shrink: 0;
+
+    i {
+      -webkit-text-fill-color: initial;
+      color: $accent-secondary;
+    }
+  }
+
+  .menu-items {
+    display: flex;
+    gap: 2px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    flex: 1;
+    justify-content: center;
+    min-width: 0;
+    flex-wrap: wrap;
+
+    .menu-item {
+      color: rgba(255, 255, 255, 0.65);
+      cursor: pointer;
+      padding: 3px 10px;
+      border-radius: 4px;
+      transition: all 0.15s;
+      text-decoration: none;
+      white-space: nowrap;
+      font-family: $font-ui;
+      font-size: 0.75rem;
+      font-weight: 500;
+
+      &:hover {
+        background-color: $bg-light;
+        color: #fff;
+      }
+
+      &.active {
+        background: linear-gradient(135deg, rgba($accent-primary, 0.85), rgba(#d90062, 0.9));
+        color: #fff;
+        box-shadow: 0 2px 8px rgba($accent-primary, 0.3);
+      }
+    }
+  }
+
+  .global-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+}
+
+// Workspace Split
+.editor-workspace {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  min-height: 0;
+  height: calc(100vh - #{$header-height} - #{$statusbar-height});
+
+  // Scrollable single-column pages (batch, analysis, asset manager)
+  &--scroll {
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: block;
+  }
+}
+
+.editor-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 12px 14px 20px;
+  width: 100%;
+}
+
+// Sidebars — min-height:0 so overflow scroll works inside flex row
+.editor-sidebar-left {
+  width: $sidebar-left-width;
+  min-width: $sidebar-left-width;
+  min-height: 0;
+  background-color: $bg-dark;
+  border-right: 1px solid $border-color;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  user-select: none;
+}
+
+.editor-sidebar-right {
+  width: $sidebar-right-width;
+  min-width: $sidebar-right-width;
+  min-height: 0;
+  background-color: $bg-dark;
+  border-left: 1px solid $border-color;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  user-select: none;
+}
+
+// Center Panel
+.editor-center-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: $bg-darkest;
+  overflow: hidden;
+  min-width: 0;
+  min-height: 0;
+}
+
+// Canvas Panel
+.canvas-workspace {
+  flex: 1;
+  position: relative;
+  background: radial-gradient(circle, #1a1e29 0%, #080a0e 100%);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
+
+  .canvas-toolbar {
+    height: $canvas-toolbar-height;
+    min-height: $canvas-toolbar-height;
+    background-color: rgba($bg-darkest, 0.85);
+    border-bottom: 1px solid $border-color;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 0 10px;
+    z-index: 10;
+    flex-shrink: 0;
+  }
+
+  .canvas-container {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: auto;
+    position: relative;
+    padding: 12px;
+    min-height: 0;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+
+    &::before {
+      display: none;
+    }
+  }
+
+  .canvas-wrapper {
+    position: relative;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.05);
+    background: #000;
+    border-radius: 4px;
+    overflow: hidden;
+
+    canvas {
+      display: block;
+      max-width: 100%;
+      max-height: calc(100vh - #{$header-height} - #{$statusbar-height} - #{$canvas-toolbar-height} - 40px);
+      width: auto;
+      height: auto;
+      border-radius: 0;
+    }
+  }
+}
+
+// Status Bar (Bottom)
+.editor-statusbar {
+  height: $statusbar-height;
+  min-height: $statusbar-height;
+  background-color: $bg-darkest;
+  border-top: 1px solid $border-color;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0.75rem;
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.5);
+  font-family: $font-mono;
+  user-select: none;
+  z-index: 60;
+  flex-shrink: 0;
+  gap: 12px;
+
+  .status-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+  }
+
+  .status-group {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+}
+
+// Short desktop heights: panels must not compress (scroll the sidebar instead)
+@media (max-height: 820px) and (min-width: 1101px) {
+  .editor-sidebar-left,
+  .editor-sidebar-right {
+    // Explicit scroll so Match Setup (speed/seed) is never crushed under Manual Control
+    overflow-y: auto;
+  }
+}
+
+// Narrow / mobile: stack with canvas first, allow page scroll
+@media (max-width: 1100px) {
+  body {
+    overflow-x: hidden;
+    overflow-y: auto;
+    height: auto;
+    min-height: 100dvh;
+  }
+
+  .editor-app-container {
+    height: auto;
+    min-height: 100dvh;
+    width: 100%;
+    max-width: 100vw;
+    overflow: visible;
+  }
+
+  .editor-workspace:not(.editor-workspace--scroll) {
+    flex-direction: column;
+    flex: none;
+    height: auto;
+    min-height: 0;
+    overflow: visible;
+  }
+
+  // Pitch first, then settings, then telemetry
+  .editor-center-panel {
+    order: -1;
+    width: 100%;
+    flex: none;
+    height: min(52dvh, 420px);
+    min-height: 220px;
+  }
+
+  .editor-sidebar-left {
+    order: 1;
+    width: 100%;
+    min-width: 0;
+    max-height: none;
+    overflow: visible;
+    border-right: none;
+    border-left: none;
+    border-bottom: 1px solid $border-color;
+  }
+
+  .editor-sidebar-right {
+    order: 2;
+    width: 100%;
+    min-width: 0;
+    max-height: none;
+    overflow: visible;
+    border-right: none;
+    border-left: none;
+    border-bottom: 1px solid $border-color;
+  }
+
+  .canvas-workspace {
+    .canvas-toolbar {
+      height: auto;
+      min-height: 44px;
+      padding: 6px 8px;
+    }
+
+    .canvas-container {
+      padding: 8px;
+    }
+
+    .canvas-wrapper canvas,
+    .canvas-wrapper #gameCanvas {
+      max-width: 100%;
+      max-height: min(44dvh, 360px);
+      width: 100%;
+      height: auto;
+    }
+  }
+
+  .editor-statusbar {
+    position: sticky;
+    bottom: 0;
+  }
+}
+
+@media (max-width: 700px) {
+  .editor-header-bar {
+    padding: 0 0.5rem;
+    gap: 0.35rem;
+
+    .menu-items {
+      justify-content: flex-start;
+      overflow-x: auto;
+      flex-wrap: nowrap;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .brand {
+      font-size: 0.7rem;
+      letter-spacing: 0.5px;
+
+      // Hide brand text on very small; keep icon
+      span.brand-text {
+        display: none;
+      }
+    }
+
+    .global-actions {
+      .badge-retro {
+        font-size: 0.58rem;
+        padding: 2px 5px;
+      }
+    }
+  }
+
+  .editor-center-panel {
+    height: min(46dvh, 340px);
+    min-height: 200px;
+  }
+
+  .canvas-workspace {
+    .canvas-wrapper canvas,
+    .canvas-wrapper #gameCanvas {
+      max-height: min(38dvh, 280px);
+    }
+  }
+
+  .scoreboard-compact {
+    gap: 0.45rem;
+    flex-wrap: wrap;
+    justify-content: center;
+
+    .score-team-name {
+      font-size: 0.62rem;
+      max-width: 4.5rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .score-value {
+      font-size: 1.1rem;
+    }
+
+    .score-clock {
+      padding: 0 8px;
+
+      .match-timer {
+        font-size: 0.95rem;
+      }
+    }
+  }
+
+  // Two-column form rows stay usable
+  .editor-sidebar-left .panel-section-body {
+    padding: 8px 10px;
+  }
+}

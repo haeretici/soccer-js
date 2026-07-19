@@ -1,0 +1,25 @@
+@use 'variables' as *;
+
+// Tune Bootstrap 5.3 dark theme to match the compact retro UI
+[data-bs-theme='dark'] {
+  --bs-body-bg: #{$body-bg};
+  --bs-body-color: #{$text-main};
+  --bs-secondary-color: #{$text-muted-custom};
+  --bs-tertiary-color: #{$text-muted-custom};
+  --bs-border-color: #{$border-color};
+  --bs-border-color-translucent: #{$border-color};
+
+  --bs-card-bg: #{$glass-bg};
+  --bs-card-border-color: #{$glass-border};
+  --bs-card-cap-bg: transparent;
+  --bs-card-color: #{$text-main};
+
+  --bs-form-control-bg: #{$input-bg};
+  --bs-form-control-border-color: #{$glass-border};
+  --bs-form-select-bg: #{$input-bg};
+  --bs-form-select-border-color: #{$glass-border};
+
+  --bs-emphasis-color: #{$text-main};
+  --bs-link-color: #{$accent-secondary};
+  --bs-link-hover-color: #{rgba($accent-secondary, 0.85)};
+}

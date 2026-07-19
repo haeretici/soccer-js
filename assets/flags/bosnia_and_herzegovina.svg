@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 750 375" width="750" height="375">
+  <rect width="750" height="375" fill="#002F6C"/>
+  <polygon points="187.5,0 562.5,0 562.5,375" fill="#FFCD00"/>
+  <!-- Stars -->
+  <circle cx="187.5" cy="50" r="8" fill="#FFFFFF"/>
+  <circle cx="230" cy="100" r="8" fill="#FFFFFF"/>
+  <circle cx="272.5" cy="150" r="8" fill="#FFFFFF"/>
+  <circle cx="315" cy="200" r="8" fill="#FFFFFF"/>
+  <circle cx="357.5" cy="250" r="8" fill="#FFFFFF"/>
+  <circle cx="400" cy="300" r="8" fill="#FFFFFF"/>
+</svg>

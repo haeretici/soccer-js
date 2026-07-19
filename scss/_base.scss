@@ -1,0 +1,28 @@
+@use 'variables' as *;
+
+// Shared utilities kept for non-shell widgets / legacy hooks
+.badge-live {
+  animation: pulse-animation 1.5s infinite alternate;
+}
+
+@keyframes pulse-animation {
+  0% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+// Legacy title (widgets / popup pages that still use it)
+.header-title {
+  font-family: $font-display;
+  font-weight: 900;
+  font-size: 1.35rem;
+  background: linear-gradient(45deg, $accent-primary, $accent-secondary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+
+.text-xxs {
+  font-size: 0.65rem !important;
+}
