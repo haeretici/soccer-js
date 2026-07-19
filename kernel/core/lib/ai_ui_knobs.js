@@ -3,6 +3,7 @@
  *
  * Strategy knobs (0–1) feed archetypes + dynamic late-game shifts.
  * Shape knobs control attack line / support runs (defaults match prior hardcodes).
+ * Full UI presets (ai_archetypes.json) may set both groups; late-game shifts set strategy only.
  */
 const STRATEGY_KNOBS = [
     'FORMATION_HOLD',

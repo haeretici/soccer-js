@@ -68,9 +68,24 @@ async function main() {
 
     const beforeDepth = Settings.AI.A.ATTACK_DEPTH_BIAS_REF;
     sim.applyStrategyOverride('A', 'catenaccio');
-    assert.strictEqual(Settings.AI.A.ATTACK_DEPTH_BIAS_REF, beforeDepth, 'archetype keeps shape knobs');
+    assert.strictEqual(Settings.AI.A.ATTACK_DEPTH_BIAS_REF, beforeDepth, 'late-game shift keeps shape knobs');
     assert.ok(Settings.AI.A.FORMATION_HOLD > 0.7, 'catenaccio sets hold');
-    log('PASS archetype does not wipe shape');
+    log('PASS dynamic strategy shift does not wipe shape');
+
+    const {
+        getArchetypeFullValues,
+        getArchetypeValues,
+        matchArchetype
+    } = require('../kernel/core/lib/ai_archetypes.js');
+    const fullCat = getArchetypeFullValues('catenaccio');
+    assert.ok(fullCat && typeof fullCat.ATTACK_DEPTH_BIAS_REF === 'number', 'full preset has shape');
+    assert.ok(fullCat.ATTACK_DEPTH_BIAS_REF < 8, 'catenaccio deep attack line');
+    const stratOnly = getArchetypeValues('gegenpressing');
+    assert.ok(stratOnly.DEFENSIVE_PRESS_INTENSITY >= 0.85);
+    assert.strictEqual(stratOnly.ATTACK_DEPTH_BIAS_REF, undefined, 'strategy-only has no shape key');
+    const matched = matchArchetype(fullCat);
+    assert.strictEqual(matched, 'catenaccio', 'full values match preset');
+    log('PASS getArchetypeFullValues / matchArchetype');
 
     const cfg = sim.captureReplayConfig();
     assert.strictEqual(cfg.aiA.ATTACK_DEPTH_BIAS_REF, 18);

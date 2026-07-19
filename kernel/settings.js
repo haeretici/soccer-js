@@ -364,7 +364,9 @@ var Settings = {
         DEFENSIVE_PRESS_INTENSITY: 0.45,
         PASS_AGGRESSION: 0.55,
         /**
-         * Attack shape knobs (Engine Tweakings — not overridden by archetypes).
+         * Attack shape knobs (Engine Tweakings).
+         * Full AI presets (ai_archetypes.json) may set these when selected in the UI.
+         * Late-game dynamic strategy shifts only touch the four strategy knobs above.
          * Defaults match prior hardcodes so existing balance is unchanged at 1×.
          */
         /** Reference-field X push when TeamStates.Attacking (was POSTURE_DEPTH_REF.attacking) */

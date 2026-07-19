@@ -1,10 +1,39 @@
 async function initBatchBuilderApp() {
-    const KNOB_KEYS = [
+    /** Strategy knobs exposed as batch-builder sliders. */
+    const STRATEGY_KNOBS = [
         'FORMATION_HOLD',
         'ATTACK_SUPPORT_INTENSITY',
         'DEFENSIVE_PRESS_INTENSITY',
         'PASS_AGGRESSION'
     ];
+    /** Attack-shape knobs carried from full presets into batch JSON (no sliders in this UI). */
+    const SHAPE_KNOBS = [
+        'ATTACK_DEPTH_BIAS_REF',
+        'ATTACK_REGION_COL_DELTA',
+        'ATTACK_ROLE_REGION_BIAS',
+        'ATTACK_SUPPORT_OWN_HALF_BLEND',
+        'ATTACK_SUPPORT_FORM_PULL',
+        'ATTACK_SUPPORT_PUSH_SCALE',
+        'SUPPORT_WIDTH'
+    ];
+    const ALL_UI_KNOBS = STRATEGY_KNOBS.concat(SHAPE_KNOBS);
+
+    const STRATEGY_DEFAULTS = {
+        FORMATION_HOLD: 0.55,
+        ATTACK_SUPPORT_INTENSITY: 0.65,
+        DEFENSIVE_PRESS_INTENSITY: 0.45,
+        PASS_AGGRESSION: 0.55
+    };
+    const SHAPE_DEFAULTS = {
+        ATTACK_DEPTH_BIAS_REF: 7.5,
+        ATTACK_REGION_COL_DELTA: 1,
+        ATTACK_ROLE_REGION_BIAS: 1,
+        ATTACK_SUPPORT_OWN_HALF_BLEND: 0.35,
+        ATTACK_SUPPORT_FORM_PULL: 1.0,
+        ATTACK_SUPPORT_PUSH_SCALE: 1.0,
+        SUPPORT_WIDTH: 0.55
+    };
+
     const AI_SLIDER_IDS = {
         A: {
             FORMATION_HOLD: 'formationHoldA',
@@ -41,6 +70,12 @@ async function initBatchBuilderApp() {
         'formationHoldB', 'attackSupportB', 'defensivePressB', 'passAggressionB'
     ];
 
+    /** Full AI blocks for batch export (strategy sliders + shape from last preset). */
+    const teamAiFull = {
+        A: Object.assign({}, STRATEGY_DEFAULTS, SHAPE_DEFAULTS),
+        B: Object.assign({}, STRATEGY_DEFAULTS, SHAPE_DEFAULTS)
+    };
+
     let aiArchetypes = {};
     try {
         const archRes = await fetch('/presets/ai_archetypes.json');
@@ -67,17 +102,29 @@ async function initBatchBuilderApp() {
     populateArchetypeSelect(archetypeSelectA);
     populateArchetypeSelect(archetypeSelectB);
 
-    function readTeamAI(team) {
-        return KNOB_KEYS.reduce((out, key) => {
+    function readStrategyFromSliders(team) {
+        return STRATEGY_KNOBS.reduce((out, key) => {
             const sliderId = AI_SLIDER_IDS[team][key];
-            out[key] = parseFloat(document.getElementById(sliderId).value);
+            const el = document.getElementById(sliderId);
+            out[key] = el ? parseFloat(el.value) : STRATEGY_DEFAULTS[key];
             return out;
         }, {});
     }
 
+    /** Sync strategy slider values into the full AI block (keeps shape). */
+    function pullStrategySlidersIntoFull(team) {
+        Object.assign(teamAiFull[team], readStrategyFromSliders(team));
+    }
+
     function matchArchetype(aiBlock) {
         for (const [id, arch] of Object.entries(aiArchetypes)) {
-            const matches = KNOB_KEYS.every((key) => Math.abs(aiBlock[key] - arch[key]) < 0.001);
+            const keys = ALL_UI_KNOBS.filter(
+                (key) => typeof arch[key] === 'number' && Number.isFinite(arch[key])
+            );
+            if (!STRATEGY_KNOBS.every((k) => keys.includes(k))) continue;
+            const matches = keys.every(
+                (key) => Math.abs((aiBlock[key] ?? Number.NaN) - arch[key]) < 0.001
+            );
             if (matches) return id;
         }
         return 'custom';
@@ -101,7 +148,8 @@ async function initBatchBuilderApp() {
     function syncArchetypeSelect(team) {
         const select = team === 'A' ? archetypeSelectA : archetypeSelectB;
         if (!select) return;
-        const archId = matchArchetype(readTeamAI(team));
+        pullStrategySlidersIntoFull(team);
+        const archId = matchArchetype(teamAiFull[team]);
         select.value = archId;
         updateArchetypeDescription(team, archId);
     }
@@ -109,11 +157,15 @@ async function initBatchBuilderApp() {
     function applyArchetype(team, archetypeId) {
         const arch = aiArchetypes[archetypeId];
         if (!arch) return;
-        for (const key of KNOB_KEYS) {
-            const slider = document.getElementById(AI_SLIDER_IDS[team][key]);
-            const label = document.getElementById(AI_LABEL_IDS[team][key]);
-            if (slider) slider.value = arch[key];
-            if (label) label.textContent = arch[key].toFixed(2);
+        for (const key of ALL_UI_KNOBS) {
+            if (typeof arch[key] !== 'number' || !Number.isFinite(arch[key])) continue;
+            teamAiFull[team][key] = arch[key];
+            if (STRATEGY_KNOBS.includes(key)) {
+                const slider = document.getElementById(AI_SLIDER_IDS[team][key]);
+                const label = document.getElementById(AI_LABEL_IDS[team][key]);
+                if (slider) slider.value = arch[key];
+                if (label) label.textContent = Number(arch[key]).toFixed(2);
+            }
         }
         updateArchetypeDescription(team, archetypeId);
         updatePreview();
@@ -122,9 +174,11 @@ async function initBatchBuilderApp() {
 
     function saveBatchAiPrefs() {
         try {
+            pullStrategySlidersIntoFull('A');
+            pullStrategySlidersIntoFull('B');
             localStorage.setItem('sim_batch_ai_prefs', JSON.stringify({
-                aiA: readTeamAI('A'),
-                aiB: readTeamAI('B'),
+                aiA: Object.assign({}, teamAiFull.A),
+                aiB: Object.assign({}, teamAiFull.B),
                 archetypeA: archetypeSelectA ? archetypeSelectA.value : 'custom',
                 archetypeB: archetypeSelectB ? archetypeSelectB.value : 'custom'
             }));
@@ -141,18 +195,30 @@ async function initBatchBuilderApp() {
             for (const team of ['A', 'B']) {
                 const block = team === 'A' ? prefs.aiA : prefs.aiB;
                 if (!block) continue;
-                for (const key of KNOB_KEYS) {
-                    if (typeof block[key] !== 'number') continue;
+                for (const key of ALL_UI_KNOBS) {
+                    if (typeof block[key] === 'number' && Number.isFinite(block[key])) {
+                        teamAiFull[team][key] = block[key];
+                    }
+                }
+                for (const key of STRATEGY_KNOBS) {
+                    if (typeof teamAiFull[team][key] !== 'number') continue;
                     const slider = document.getElementById(AI_SLIDER_IDS[team][key]);
                     const label = document.getElementById(AI_LABEL_IDS[team][key]);
-                    if (slider) slider.value = block[key];
-                    if (label) label.textContent = block[key].toFixed(2);
+                    if (slider) slider.value = teamAiFull[team][key];
+                    if (label) label.textContent = Number(teamAiFull[team][key]).toFixed(2);
                 }
             }
             if (archetypeSelectA && prefs.archetypeA) archetypeSelectA.value = prefs.archetypeA;
             if (archetypeSelectB && prefs.archetypeB) archetypeSelectB.value = prefs.archetypeB;
-            syncArchetypeSelect('A');
-            syncArchetypeSelect('B');
+            // Re-apply full preset if select points at a known id (restores shape knobs)
+            for (const team of ['A', 'B']) {
+                const select = team === 'A' ? archetypeSelectA : archetypeSelectB;
+                if (select && select.value && select.value !== 'custom' && aiArchetypes[select.value]) {
+                    applyArchetype(team, select.value);
+                } else {
+                    syncArchetypeSelect(team);
+                }
+            }
         } catch (e) {
             console.warn('Could not load batch AI prefs:', e);
         }
@@ -166,36 +232,34 @@ async function initBatchBuilderApp() {
         const res = await fetch('/presets/palettes.json');
         palettes = await res.json();
     } catch (e) {
-        console.error("Failed to load palettes JSON:", e);
+        console.error('Failed to load palettes JSON:', e);
         palettes = {
-            "Brazil": { "flag": "br" },
-            "Argentina": { "flag": "ar" }
+            Brazil: { flag: 'br' },
+            Argentina: { flag: 'ar' }
         };
     }
 
     const teamNames = Object.keys(palettes).sort();
 
-    // Populate select inputs dynamically
     if (teamASelect && teamBSelect) {
-        teamNames.forEach(name => {
+        teamNames.forEach((name) => {
             const optA = document.createElement('option');
             optA.value = name;
             optA.textContent = name;
-            if (name === "Brazil") optA.selected = true;
+            if (name === 'Brazil') optA.selected = true;
             teamASelect.appendChild(optA);
 
             const optB = document.createElement('option');
             optB.value = name;
             optB.textContent = name;
-            if (name === "Argentina") optB.selected = true;
+            if (name === 'Argentina') optB.selected = true;
             teamBSelect.appendChild(optB);
         });
 
-        // Prevent duplicate select
         const preventDuplicateTeams = (changedSelect, otherSelect) => {
             if (changedSelect.value === otherSelect.value) {
-                const options = Array.from(otherSelect.options).map(opt => opt.value);
-                const fallback = options.find(val => val !== changedSelect.value);
+                const options = Array.from(otherSelect.options).map((opt) => opt.value);
+                const fallback = options.find((val) => val !== changedSelect.value);
                 otherSelect.value = fallback;
             }
         };
@@ -211,6 +275,8 @@ async function initBatchBuilderApp() {
     }
 
     function buildConfig() {
+        pullStrategySlidersIntoFull('A');
+        pullStrategySlidersIntoFull('B');
         return {
             iterations: parseInt(document.getElementById('iterations').value, 10),
             seed: parseInt(document.getElementById('seed').value, 10),
@@ -223,18 +289,8 @@ async function initBatchBuilderApp() {
             formationB: document.getElementById('formationB').value,
             matchDurationSeconds: parseInt(document.getElementById('matchDurationSeconds').value, 10),
             fieldSizeMultiplier: parseFloat(document.getElementById('fieldSizeMultiplier').value),
-            aiA: {
-                FORMATION_HOLD: parseFloat(document.getElementById('formationHoldA').value),
-                ATTACK_SUPPORT_INTENSITY: parseFloat(document.getElementById('attackSupportA').value),
-                DEFENSIVE_PRESS_INTENSITY: parseFloat(document.getElementById('defensivePressA').value),
-                PASS_AGGRESSION: parseFloat(document.getElementById('passAggressionA').value)
-            },
-            aiB: {
-                FORMATION_HOLD: parseFloat(document.getElementById('formationHoldB').value),
-                ATTACK_SUPPORT_INTENSITY: parseFloat(document.getElementById('attackSupportB').value),
-                DEFENSIVE_PRESS_INTENSITY: parseFloat(document.getElementById('defensivePressB').value),
-                PASS_AGGRESSION: parseFloat(document.getElementById('passAggressionB').value)
-            }
+            aiA: Object.assign({}, teamAiFull.A),
+            aiB: Object.assign({}, teamAiFull.B)
         };
     }
 
@@ -275,6 +331,7 @@ async function initBatchBuilderApp() {
             if (id.startsWith('formationHold') || id.startsWith('attackSupport')
                 || id.startsWith('defensivePress') || id.startsWith('passAggression')) {
                 const team = id.endsWith('A') ? 'A' : 'B';
+                pullStrategySlidersIntoFull(team);
                 syncArchetypeSelect(team);
                 saveBatchAiPrefs();
             }

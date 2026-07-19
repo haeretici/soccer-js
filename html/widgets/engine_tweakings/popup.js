@@ -4,14 +4,14 @@
  */
 (function () {
     const CHANNEL = 'soccer-js-engine-tweaks';
-    /** Archetype-matched strategy knobs only (presets leave attack-shape alone). */
+    /** Strategy knobs (also used by late-game dynamic shifts). */
     const STRATEGY_KNOB_KEYS = [
         'FORMATION_HOLD',
         'ATTACK_SUPPORT_INTENSITY',
         'DEFENSIVE_PRESS_INTENSITY',
         'PASS_AGGRESSION'
     ];
-    /** All team-split knobs sent to parent (strategy + attack shape). */
+    /** All team-split knobs sent to parent (strategy + attack shape). Presets apply both. */
     const KNOB_KEYS = [
         'FORMATION_HOLD',
         'ATTACK_SUPPORT_INTENSITY',
@@ -156,9 +156,13 @@
 
     function matchArchetype(aiBlock) {
         for (const [id, arch] of Object.entries(aiArchetypes)) {
-            // Only the classic four knobs define a preset match
-            const matches = STRATEGY_KNOB_KEYS.every(
-                (key) => Math.abs((aiBlock[key] ?? -1) - arch[key]) < 0.001
+            // Strategy required; shape only when the preset defines it
+            const keys = KNOB_KEYS.filter(
+                (key) => typeof arch[key] === 'number' && Number.isFinite(arch[key])
+            );
+            if (!STRATEGY_KNOB_KEYS.every((k) => keys.includes(k))) continue;
+            const matches = keys.every(
+                (key) => Math.abs((aiBlock[key] ?? Number.NaN) - arch[key]) < 0.001
             );
             if (matches) return id;
         }
@@ -206,8 +210,9 @@
     function applyArchetypeToSliders(team, archetypeId) {
         const arch = aiArchetypes[archetypeId];
         if (!arch) return false;
-        // Presets only touch strategy knobs — attack shape stays user-tuned
-        for (const key of STRATEGY_KNOB_KEYS) {
+        // Full preset: strategy + attack shape (any numeric knob defined on the archetype)
+        for (const key of KNOB_KEYS) {
+            if (typeof arch[key] !== 'number' || !Number.isFinite(arch[key])) continue;
             const slider = byId(AI_SLIDER_IDS[team][key]);
             const valEl = byId(AI_VAL_IDS[team][key]);
             if (slider) slider.value = arch[key];
@@ -429,9 +434,8 @@
                 const val = parseFloat(target.value);
                 const valEl = byId(AI_VAL_IDS[team][key]);
                 if (valEl) valEl.innerText = formatKnob(key, val);
-                if (archetypesReady && STRATEGY_KNOB_KEYS.includes(key)) {
-                    syncArchetypeSelect(team);
-                }
+                // Any UI knob can break / restore a full preset match (incl. shape)
+                if (archetypesReady) syncArchetypeSelect(team);
                 patch.AI = collectBothTeamsAI();
                 return patch;
             }

@@ -19,6 +19,7 @@
     "sim:batch": "node scripts/run_batch_sim.js",
     "sim:profile": "node scripts/profile_batch.js",
     "sim:sweep": "node scripts/run_param_sweep.js",
+    "sim:eval-presets": "node scripts/eval_ai_presets.js",
     "test:formations": "node tests/formations.js",
     "test:team-fsm": "node tests/team_fsm.js",
     "test:pass-safety": "node tests/pass_safety.js",

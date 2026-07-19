@@ -25,6 +25,8 @@ Engine translates logic $(x, y)$ and height $(z)$ to screen $(sx, sy)$ via 3 mod
 
 ## Presets (`presets/`)
 * `formations.json`: Base coords for tactical shapes.
+* `ai_archetypes.json`: Custom AI strategy presets (strategy + attack shape knobs).
+* `ai_params.json`: Named AI param profiles for batch / sweeps.
 * `player_stats.json`: Base stats + 8 player-specific palette colors.
 * `palettes.json`: 7 kit colors per team (48 nations).
 * `sprite_manifest.json`: Single source of truth for tile/frame sizes.

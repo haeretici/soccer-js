@@ -19,6 +19,11 @@ Varies one `Settings.AI` knob to test balance.
 * `npm run sim:sweep -- '{"knob":"PASS_AGGRESSION","min":0.1,"max":0.9,"steps":5}'`
 * Outputs table and `.tsv` spreadsheet inside `simulations/output/sweeps/`.
 
+## AI Preset Viability Eval
+Head-to-head each `presets/ai_archetypes.json` style (full knobs incl. attack shape) vs `balanced`.
+* `node scripts/eval_ai_presets.js '{"iterations":16,"seed":42,"matchDurationSeconds":600}'`
+* Writes JSON under `simulations/output/preset_eval/`. Use after changing preset numbers.
+
 ## AI Debug Overlays
 Toggled via `Settings.debugAI`. Skipped in headless.
 * Includes: `supportSpots`, `roles`, `states`, `passLanes`, `predictedPath` (3D ball trajectory), `goalMouth` (shot block samples), `offsideLine`.
