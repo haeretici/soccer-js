@@ -1,3 +1,5 @@
+const { appUrl } = require('../core/lib/app_paths.js');
+
 async function initBatchBuilderApp() {
     /** Strategy knobs exposed as batch-builder sliders. */
     const STRATEGY_KNOBS = [
@@ -78,7 +80,7 @@ async function initBatchBuilderApp() {
 
     let aiArchetypes = {};
     try {
-        const archRes = await fetch('/presets/ai_archetypes.json');
+        const archRes = await fetch(appUrl('presets/ai_archetypes.json'));
         aiArchetypes = await archRes.json();
     } catch (e) {
         console.error('Failed to load AI archetypes:', e);
@@ -229,7 +231,7 @@ async function initBatchBuilderApp() {
 
     let palettes = {};
     try {
-        const res = await fetch('/presets/palettes.json');
+        const res = await fetch(appUrl('presets/palettes.json'));
         palettes = await res.json();
     } catch (e) {
         console.error('Failed to load palettes JSON:', e);

@@ -17,6 +17,7 @@ const {
     DEFAULT_PLAYER_COLORS,
     zlibDecompress
 } = require('../../core/lib/sprite_sheets.js');
+const { appUrl } = require('../../core/lib/app_paths.js');
 
 async function initAssetManagerApp() {
     const LOGICAL_W = SPRITE_TILE_W;
@@ -133,7 +134,7 @@ async function initAssetManagerApp() {
 
     async function loadPartBin(category) {
         try {
-            const response = await fetch(`/assets/sprites/${category}/${TYPE_INDEX}.bin`);
+            const response = await fetch(appUrl(`assets/sprites/${category}/${TYPE_INDEX}.bin`));
             if (!response.ok) return null;
 
             const buf = await response.arrayBuffer();
@@ -199,7 +200,7 @@ async function initAssetManagerApp() {
         }
         try {
             if (!loadedRigs[rigId]) {
-                const response = await fetch(`/assets/animation_rigs/${rigId}.json`);
+                const response = await fetch(appUrl(`assets/animation_rigs/${rigId}.json`));
                 if (response.ok) {
                     loadedRigs[rigId] = await response.json();
                 } else {
@@ -258,7 +259,7 @@ async function initAssetManagerApp() {
     async function init() {
         if (loadingOverlay) loadingOverlay.style.display = 'flex';
         try {
-            const resPal = await fetch('/presets/palettes.json');
+            const resPal = await fetch(appUrl('presets/palettes.json'));
             if (resPal.ok) palettes = await resPal.json();
 
             await loadActiveRig(activeRigId);

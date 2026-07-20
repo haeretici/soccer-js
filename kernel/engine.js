@@ -3,6 +3,7 @@ const { Time } = require('./core/lib/time.js');
 const { Settings } = require('./settings');
 const { Utils } = require('./core/lib/utils.js');
 const { loadState, saveState } = require('./core/lib/db.js');
+const { appUrl } = require('./core/lib/app_paths.js');
 
 var CanvasLoop = function (currentTime) {
     const deltaTime = currentTime - Settings.app.lastTime;
@@ -146,7 +147,7 @@ var Application = {
 
         if (typeof Image !== 'undefined' && !this.openingImage) {
             this.openingImage = new Image();
-            this.openingImage.src = '/assets/images/opening.jpg';
+            this.openingImage.src = appUrl('assets/images/opening.jpg');
         }
 
         this.canvas.setAttribute('width', this.width);

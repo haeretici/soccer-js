@@ -1,7 +1,5 @@
 node_modules/
 simulations/
-build/
-css/
 nbproject/
 tests/scratch/
 package-lock.json

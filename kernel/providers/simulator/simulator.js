@@ -30,6 +30,7 @@ const { Pitch } = require('../../core/entities/pitch.js');
 const { SoundDB } = require('../../core/lib/sounddb.js');
 const { registerPlayerSheetsFromPng } = require('../../core/lib/sprite_sheets.js');
 const { Utils } = require('../../core/lib/utils.js');
+const { appUrl } = require('../../core/lib/app_paths.js');
 const { MessageDispatcher } = require('../../core/lib/message_dispatcher.js');
 const { drawAiDebugOverlays } = require('../../core/lib/ai_debug_draw.js');
 const {
@@ -867,12 +868,12 @@ class Simulator extends GameObject {
                 this.teamStatsPreset = headlessPresetsCache.teamStatsPreset;
                 this.formationsPreset = headlessPresetsCache.formationsPreset;
             } else {
-                const statsRes = await fetch('/presets/player_stats.json');
+                const statsRes = await fetch(appUrl('presets/player_stats.json'));
                 const statsPreset = await statsRes.json();
                 this.defaultStats = statsPreset.default_stats;
                 this.teamStatsPreset = statsPreset.teams;
 
-                const formationsRes = await fetch('/presets/formations.json');
+                const formationsRes = await fetch(appUrl('presets/formations.json'));
                 this.formationsPreset = await formationsRes.json();
 
                 if (Settings.HEADLESS) {
@@ -902,7 +903,7 @@ class Simulator extends GameObject {
         if (!this.teamAName || !this.teamBName) return;
 
         try {
-            const palettesRes = await fetch('/presets/palettes.json');
+            const palettesRes = await fetch(appUrl('presets/palettes.json'));
             const palettes = await palettesRes.json();
             await registerPlayerSheetsFromPng(
                 palettes,
@@ -2368,7 +2369,7 @@ class Simulator extends GameObject {
     }
 
     getFlagUrl(teamName) {
-        return `/assets/flags/${teamName.toLowerCase().replace(/\s+/g, '_')}.svg`;
+        return appUrl(`assets/flags/${teamName.toLowerCase().replace(/\s+/g, '_')}.svg`);
     }
 
     setFlagSrcIfChanged(imgEl, cacheKey, teamName) {

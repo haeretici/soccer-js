@@ -5,6 +5,7 @@ const { loadPersistedAiStrategy } = require('../../../html/widgets/engine_tweaki
 const { createEngineTweakingsParentBridge } = require('../../../html/widgets/engine_tweakings/parent_bridge.js');
 const { gameKeyboard } = require('../../core/lib/input_keyboard.js');
 const { SoundDB } = require('../../core/lib/sounddb.js');
+const { appUrl } = require('../../core/lib/app_paths.js');
 
 async function initGameApp() {
     // Persist AI knobs into Settings even before the floating panel opens
@@ -23,7 +24,7 @@ async function initGameApp() {
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
             }
         };
-        img.src = '/assets/images/opening.jpg';
+        img.src = appUrl('assets/images/opening.jpg');
     }
 
     // 1. Initialize UI Controls
@@ -241,7 +242,7 @@ async function initGameApp() {
     // Load presets and populate select dropdowns
     let palettes = {};
     try {
-        const res = await fetch('/presets/palettes.json');
+        const res = await fetch(appUrl('presets/palettes.json'));
         palettes = await res.json();
     } catch (e) {
         console.error("Failed to load palettes JSON:", e);
@@ -280,7 +281,7 @@ async function initGameApp() {
         const flagB = document.getElementById('flagB');
 
         const getFlagUrl = (teamName) => {
-            return `/assets/flags/${teamName.toLowerCase().replace(/\s+/g, '_')}.svg`;
+            return appUrl(`assets/flags/${teamName.toLowerCase().replace(/\s+/g, '_')}.svg`);
         };
 
         let lastFlagA = null;

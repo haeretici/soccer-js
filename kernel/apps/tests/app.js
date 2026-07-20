@@ -9,6 +9,7 @@ const { loadPersistedAiStrategy } = require('../../../html/widgets/engine_tweaki
 const { createEngineTweakingsParentBridge } = require('../../../html/widgets/engine_tweakings/parent_bridge.js');
 const { gameKeyboard } = require('../../core/lib/input_keyboard.js');
 const { SoundDB } = require('../../core/lib/sounddb.js');
+const { appUrl } = require('../../core/lib/app_paths.js');
 const {
     SCENARIO_CATALOG,
     getScenarioDef,
@@ -86,7 +87,7 @@ async function initTestsApp() {
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
             }
         };
-        img.src = '/assets/images/opening.jpg';
+        img.src = appUrl('assets/images/opening.jpg');
     }
 
     const teamASelect = document.getElementById('teamASelect');
@@ -325,7 +326,7 @@ async function initTestsApp() {
 
     let palettes = {};
     try {
-        const res = await fetch('/presets/palettes.json');
+        const res = await fetch(appUrl('presets/palettes.json'));
         palettes = await res.json();
     } catch (e) {
         console.error('Failed to load palettes JSON:', e);
@@ -358,7 +359,7 @@ async function initTestsApp() {
         const flagA = document.getElementById('flagA');
         const flagB = document.getElementById('flagB');
 
-        const getFlagUrl = (teamName) => `/assets/flags/${teamName.toLowerCase().replace(/\s+/g, '_')}.svg`;
+        const getFlagUrl = (teamName) => appUrl(`assets/flags/${teamName.toLowerCase().replace(/\s+/g, '_')}.svg`);
 
         let lastFlagA = null;
         let lastFlagB = null;

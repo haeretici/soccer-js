@@ -224,7 +224,8 @@
 
     async function loadArchetypes() {
         try {
-            const res = await fetch('/presets/ai_archetypes.json', { cache: 'no-cache' });
+            // Relative to this page (html/widgets/engine_tweakings/) → repo root
+            const res = await fetch('../../../presets/ai_archetypes.json', { cache: 'no-cache' });
             if (!res.ok) throw new Error('HTTP ' + res.status);
             aiArchetypes = await res.json();
         } catch (err) {

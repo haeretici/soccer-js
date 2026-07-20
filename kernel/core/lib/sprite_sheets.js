@@ -1,9 +1,10 @@
 const { ImageDB } = require('./imagedb.js');
 const { mergePlayerPalette, hexToRgb } = require('./sprite_generator.js');
 const { Settings } = require('../../settings.js');
+const { appUrl } = require('./app_paths.js');
 
-const RIG_PATH = '/assets/animation_rigs/1.json';
-const PARTS_BASE = '/assets/sprites';
+const RIG_PATH_REL = 'assets/animation_rigs/1.json';
+const PARTS_BASE_REL = 'assets/sprites';
 const TYPE_INDEX = 1;
 
 /**
@@ -198,7 +199,7 @@ async function zlibDecompress(compressedBuf) {
  * Load a bank of modular parts and return an array of canvas elements.
  */
 async function loadPartBank(category) {
-    const path = `${PARTS_BASE}/${category}/${TYPE_INDEX}.bin`;
+    const path = appUrl(`${PARTS_BASE_REL}/${category}/${TYPE_INDEX}.bin`);
     const res = await fetch(path);
     if (!res.ok) return null;
 
@@ -257,8 +258,9 @@ async function loadPartBank(category) {
  * Load the rig and all referenced part banks.
  */
 async function loadModularData() {
-    const rigRes = await fetch(RIG_PATH);
-    if (!rigRes.ok) throw new Error(`Failed to load ${RIG_PATH}`);
+    const rigPath = appUrl(RIG_PATH_REL);
+    const rigRes = await fetch(rigPath);
+    if (!rigRes.ok) throw new Error(`Failed to load ${rigPath}`);
     const rig = await rigRes.json();
 
     const categories = new Set();

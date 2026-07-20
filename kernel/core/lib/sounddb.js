@@ -2,13 +2,14 @@
  * Web Audio SFX + crowd bed for browser matches.
  *
  * - Procedural synths by default (no assets required).
- * - Optional WAV overrides: fetch `/assets/sounds/<name>.wav` when present.
+ * - Optional WAV overrides: fetch via appUrl(`assets/sounds/<name>.wav`) when present.
  * - Isolated LCG for noise — never Math.random() (seeded sim RNG must stay clean).
  * - Headless / muted / scrub-forward: no-ops.
  * - Crowd is a continuous low-pass noise bed with intensity driven by match state.
  */
 const { Settings } = require('../../settings.js');
 const { Utils } = require('./utils.js');
+const { appUrl } = require('./app_paths.js');
 
 /** Isolated audio RNG — do not touch Utils.pseudoRandomState used by weather/VFX. */
 const audioRng = {
@@ -23,7 +24,7 @@ const audioRng = {
     }
 };
 
-const WAV_BASE = '/assets/sounds/';
+const WAV_BASE_REL = 'assets/sounds/';
 
 /** Default gain per one-shot (master multiplies). */
 const SFX_GAIN = {
@@ -362,7 +363,7 @@ const SoundDB = {
             return;
         }
         this.wavLoading[name] = true;
-        const url = WAV_BASE + encodeURIComponent(name) + '.wav';
+        const url = appUrl(WAV_BASE_REL + encodeURIComponent(name) + '.wav');
         fetch(url)
             .then((res) => {
                 if (!res.ok) throw new Error('no wav');

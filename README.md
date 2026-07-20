@@ -48,7 +48,11 @@ Then open:
 | Asset Manager | http://localhost:8080/html/asset-manager.html |
 | Scenario Lab | http://localhost:8080/html/tests.html |
 
-Root `index.html` redirects to `/html/`.
+Root `index.html` redirects to `html/` (relative — works under a subpath).
+
+### Subpath hosting
+
+The UI can be served from a path prefix (e.g. `https://host/soccer/html/index.html`). Static tags in `html/*.html` use `../…`; runtime `fetch` / images use `appUrl()` from `kernel/core/lib/app_paths.js` (detects the parent of `/html/`). Optional override: `window.__APP_ROOT__ = '/soccer/'`.
 
 ## Project layout
 

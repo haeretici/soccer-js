@@ -27,4 +27,4 @@
 | `net.wav` | Ball in net |
 | `crowd_burst.wav` | Short crowd swell |
 
-Paths are fetched as `/assets/sounds/<name>.wav`. Missing files are ignored (synth keeps playing).
+Paths are fetched via `appUrl('assets/sounds/<name>.wav')` (subpath-safe). Missing files are ignored (synth keeps playing).

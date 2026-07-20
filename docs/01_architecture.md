@@ -3,6 +3,7 @@
 ## Core File Paths (Abridged)
 * `kernel/core/entities/`: Base classes (`gameobject.js`, `team.js`, `player.js`, `ball.js`, `pitch.js`).
 * `kernel/core/lib/`: Utilities, FSM, math, and AI logic modules.
+* `kernel/core/lib/app_paths.js`: Browser `appUrl()` for subpath-safe asset/preset URLs (see `docs/03_rendering_assets.md`).
 * `kernel/providers/simulator/`: Match flow and headless runners.
 * `engine.js`: Main loops.
 
