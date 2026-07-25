@@ -18,7 +18,7 @@ Check out this Open Source Soocer Game Engine in action:
 - **Manual control** — take over a player while AI runs the rest
 - **Headless batch runner** — multi-worker simulations, telemetry, parameter sweeps
 - **Scenario Lab** — isolated set-piece / open-play situations for interactive testing
-- **Asset Manager** — browse and work with sprite / palette assets
+- **Asset Manager** — browse and work with sprite / palette assets (game sprites created using [Sprite Editor](https://github.com/haeretici/sprite-editor))
 
 ## Requirements
 
@@ -126,7 +126,7 @@ Deep dives for contributors and agents:
 | [docs/02_ai_and_match.md](docs/02_ai_and_match.md) | Player AI, passes, FSMs, set pieces |
 | [docs/03_rendering_assets.md](docs/03_rendering_assets.md) | Canvas, isometric draw, sprites, audio |
 | [docs/04_simulation.md](docs/04_simulation.md) | Headless batch, telemetry, Scenario Lab, tests |
-| [docs/05_spritesheet.md](docs/05_spritesheet.md) | Sprite sheet format |
+| [docs/05_spritesheet.md](docs/05_spritesheet.md) | Sprite sheet format (created via [Sprite Editor](https://github.com/haeretici/sprite-editor)) |
 
 ## License
 
