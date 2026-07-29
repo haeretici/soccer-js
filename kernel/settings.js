@@ -5,6 +5,16 @@ var Settings = {
     tileWidth: spriteManifest.SPRITE_TILE_W,
     tileHeight: spriteManifest.SPRITE_TILE_H,
     screenColor: '#2b5f2b', // beautiful retro dark green pitch color
+    /**
+     * When true, CanvasLoop freezes the last painted frame while Application.paused
+     * (no clear/redraw until unpause or Application.markRenderDirty).
+     */
+    RENDER_SKIP_WHEN_PAUSED: true,
+    /**
+     * |netExp| below this treats goal nets as at rest so live mesh can be skipped
+     * (rest nets are baked into the pitch offscreen cache).
+     */
+    GOAL_NET_AT_REST_EPS: 0.0005,
     showFPS: true,
     showTime: true,
     SPRITE_SPEED: 1,

@@ -14,6 +14,22 @@ Engine translates logic $(x, y)$ and height $(z)$ to screen $(sx, sy)$ via 3 mod
 
 *Ball shadow renders at true ground `(X,Y)`. Y-sorting handles draw order based on ground Y.*
 
+## Pitch offscreen cache (`pitch.js`)
+
+Static stadium + turf + markings + **rest-state goals** are baked into an offscreen canvas and blitted once per frame.
+
+| Invalidates cache | Survives without rebuild |
+| :--- | :--- |
+| `projectionMode`, camera `scale`, layout `offsetX/Y`, `FIELD_SIZE_MULTIPLIER`, `weather` | `Application.camX` / `camY` pan (`g.translate` in `engine.js`) |
+
+* **Isometric turf:** painted as 4-unit band quads (same light/dark pattern as the old per-tile diamonds), not one diamond per world tile.
+* **Goal nets:** rest mesh lives in the cache. While `|leftNetExp|` / `|rightNetExp|` exceed `Settings.GOAL_NET_AT_REST_EPS`, only the deformed back/top mesh is redrawn live.
+* **Headless / mock ctx:** no `drawImage` → direct path (tests); call `invalidateRenderCache()` after structural field changes if needed.
+
+## Pause freeze (`engine.js`)
+
+When `Settings.RENDER_SKIP_WHEN_PAUSED` (default **true**) and `Application.paused`, CanvasLoop keeps the last frame (no `clearScreen` / `render` / `onGUI`) until unpause or `Application.markRenderDirty()` (e.g. projection/weather UI while paused).
+
 ## Sprites & Assets
 * **Player Spritesheet:** Sprites are generated on the fly and cached by a "Modular Animation System", when changing player sprites related code (that is, `sprite_generator.js`) you can read for `05_spritesheet.md` for further information (only when necessary, avoid otherwise).
 * **Recoloring:** `sprite_generator.js` uses fast bitwise replacement. Slots 1-7 are team colors (kit); slots 8-15 are player colors (skin/hair). Caches in `ImageDB`.

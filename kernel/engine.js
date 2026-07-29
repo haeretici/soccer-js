@@ -8,11 +8,13 @@ const { appUrl } = require('./core/lib/app_paths.js');
 var CanvasLoop = function (currentTime) {
     const deltaTime = currentTime - Settings.app.lastTime;
     if (deltaTime >= Settings.app.targetFrameTime) {
-        // Only clear screen after updates
-        Settings.app.clearScreen();
-        Settings.app.render();
-        Settings.app.onGUI();
-        Settings.app.frames++;
+        // Pause freeze: keep last frame on canvas (no clear/redraw) until dirty or unpause
+        if (!Settings.app.shouldSkipRenderFrame()) {
+            Settings.app.clearScreen();
+            Settings.app.render();
+            Settings.app.onGUI();
+            Settings.app.frames++;
+        }
 
         if (Settings.app.currentLevel && Settings.app.currentLevel.active && currentTime - Settings.app.lastFrameFPSUpdate >= 1000) { // Update every 1 second
             Settings.app.FPS = Settings.app.frames / ((currentTime - Settings.app.lastFrameFPSUpdate) / 1000);
@@ -101,10 +103,46 @@ var Application = {
     height: 0,
     camX: 0,
     camY: 0,
+    /** When true, next paused frame must repaint (projection/weather/UI change). */
+    _renderDirty: true,
+    /** After a successful paint while paused, freeze the canvas until dirty/unpause. */
+    _frozenFrame: false,
+
+    /**
+     * Force a repaint on the next CanvasLoop tick (e.g. camera view / weather while paused).
+     */
+    markRenderDirty: function () {
+        this._renderDirty = true;
+        this._frozenFrame = false;
+    },
+
+    /**
+     * Skip clear+render+onGUI when paused and a frozen frame is already on screen.
+     * Always paints at least once after pause (or after markRenderDirty).
+     * @returns {boolean}
+     */
+    shouldSkipRenderFrame: function () {
+        if (Settings.HEADLESS) return true;
+        if (this.gameStatus === 'stopped') {
+            this._frozenFrame = false;
+            return false;
+        }
+        if (!Settings.RENDER_SKIP_WHEN_PAUSED || !this.paused) {
+            this._frozenFrame = false;
+            return false;
+        }
+        if (this._renderDirty || !this._frozenFrame) {
+            this._renderDirty = false;
+            this._frozenFrame = true;
+            return false;
+        }
+        return true;
+    },
 
     loadLevel: async function (currentLevel) {
         this.levelReady = false;
         Time.resetTimeSinceLevelLoad();
+        this.markRenderDirty();
         this.clearScreen();
         if (this.currentLevel !== null && this.currentLevel.destroy !== undefined) {
             this.currentLevel.destroy();

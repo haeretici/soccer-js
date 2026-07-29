@@ -209,6 +209,9 @@ async function initGameApp() {
     if (cameraViewSelect) {
         cameraViewSelect.addEventListener('change', (e) => {
             Settings.projectionMode = e.target.value;
+            if (typeof Application !== 'undefined' && Application.markRenderDirty) {
+                Application.markRenderDirty();
+            }
             try {
                 localStorage.setItem('projection_mode', e.target.value);
             } catch (err) {
@@ -220,6 +223,9 @@ async function initGameApp() {
     if (weatherSelect) {
         weatherSelect.addEventListener('change', (e) => {
             Settings.weather = e.target.value;
+            if (typeof Application !== 'undefined' && Application.markRenderDirty) {
+                Application.markRenderDirty();
+            }
             try {
                 localStorage.setItem('weather_state', e.target.value);
             } catch (err) {

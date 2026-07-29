@@ -164,18 +164,302 @@ class Pitch extends GameObject {
         }
     }
 
+    /**
+     * Drop offscreen pitch cache (field size / art path changes).
+     * Next real-context render rebuilds via checkCacheValid.
+     */
+    invalidateRenderCache() {
+        this.cacheCanvas = null;
+        this.cacheCtx = null;
+        this.cacheOffsetX = 0;
+        this.cacheOffsetY = 0;
+        this.cacheParams.projectionMode = null;
+        this.cacheParams.scale = null;
+        this.cacheParams.fieldMultiplier = null;
+        this.cacheParams.offsetX = null;
+        this.cacheParams.offsetY = null;
+        this.cacheParams.weather = null;
+    }
+
     checkCacheValid() {
-        if (!this.cacheCanvas) return false;
-        
+        if (!this.cacheCanvas || !this.cacheCanvas.width) return false;
+
         const scale = Settings.camera ? Settings.camera.scale : Settings.BASE_SCALE;
         const { offsetX, offsetY } = Utils.getCameraOffsets();
-        
+
+        // camX/camY pan is applied in Application.render via translate — not a cache key.
         return this.cacheParams.projectionMode === Settings.projectionMode &&
                this.cacheParams.scale === scale &&
                this.cacheParams.fieldMultiplier === Settings.FIELD_SIZE_MULTIPLIER &&
                this.cacheParams.offsetX === offsetX &&
                this.cacheParams.offsetY === offsetY &&
                this.cacheParams.weather === Settings.weather;
+    }
+
+    /**
+     * Turf stripes for rebuild / mock paths. Iso uses 4-unit bands (same as legacy
+     * floor(x/4) pattern) instead of one diamond per world tile.
+     * @param {CanvasRenderingContext2D} g
+     * @param {number} fw
+     * @param {number} fh
+     * @param {number} scale
+     * @param {number} tw
+     * @param {number} th
+     * @param {number} offsetX
+     * @param {number} offsetY
+     */
+    _paintTurf(g, fw, fh, scale, tw, th, offsetX, offsetY) {
+        if (Settings.projectionMode === 'isometric') {
+            for (let x = 0; x < fw; x += 4) {
+                const x1 = Math.min(x + 4, fw);
+                const isLight = Math.floor(x / 4) % 2 === 0;
+                g.fillStyle = isLight ? '#4c9c4c' : '#418b41';
+                const tl = Utils.toScreen(x, 0);
+                const tr = Utils.toScreen(x1, 0);
+                const br = Utils.toScreen(x1, fh);
+                const bl = Utils.toScreen(x, fh);
+                g.beginPath();
+                g.moveTo(tl.x, tl.y);
+                g.lineTo(tr.x, tr.y);
+                g.lineTo(br.x, br.y);
+                g.lineTo(bl.x, bl.y);
+                g.closePath();
+                g.fill();
+            }
+            return;
+        }
+        if (Settings.projectionMode === 'topdown') {
+            const { scaleX, scaleY } = Utils.getOrthoScales(scale);
+            for (let x = 0; x < fw; x += 2) {
+                const isLight = (x / 2) % 2 === 0;
+                g.fillStyle = isLight ? '#4c9c4c' : '#418b41';
+                g.fillRect(offsetX + x * scaleX, offsetY, 2 * scaleX, fh * scaleY);
+            }
+            return;
+        }
+        // orthographic broadcast
+        for (let x = 0; x < fw; x += 2) {
+            const isLight = (x / 2) % 2 === 0;
+            g.fillStyle = isLight ? '#4c9c4c' : '#418b41';
+            const tl = Utils.toScreen(x, 0);
+            const tr = Utils.toScreen(x + 2, 0);
+            const br = Utils.toScreen(x + 2, fh);
+            const bl = Utils.toScreen(x, fh);
+            g.beginPath();
+            g.moveTo(tl.x, tl.y);
+            g.lineTo(tr.x, tr.y);
+            g.lineTo(br.x, br.y);
+            g.lineTo(bl.x, bl.y);
+            g.closePath();
+            g.fill();
+        }
+    }
+
+    /**
+     * Goal posts / nets. Rest-state (exp=0) is baked into the pitch cache; live
+     * mesh is only needed while net spring expansion is non-zero.
+     *
+     * @param {CanvasRenderingContext2D} g
+     * @param {number} fw
+     * @param {function(number): number} s scaleFieldX helper
+     * @param {number} leftExp
+     * @param {number} rightExp
+     * @param {{ frames?: boolean, sideNets?: boolean, meshNets?: boolean }} [parts]
+     */
+    _paintGoals(g, fw, s, leftExp, rightExp, parts) {
+        const p = parts || {};
+        const doFrames = p.frames !== false;
+        const doSide = p.sideNets !== false;
+        const doMesh = p.meshNets !== false;
+        if (!doFrames && !doSide && !doMesh) return;
+
+        this.ensureGoals();
+        const goalHeight = this.leftGoal.height;
+        const goalDepth = this.leftGoal.renderDepth;
+        const goalY1 = this.leftGoal.yMin;
+        const goalY2 = this.leftGoal.yMax;
+
+        const drawLine = (p1, p2, color = '#FFFFFF', width = 2) => {
+            const s1 = Utils.toScreen(p1.x, p1.y, p1.z || 0);
+            const s2 = Utils.toScreen(p2.x, p2.y, p2.z || 0);
+            g.strokeStyle = color;
+            g.lineWidth = width;
+            g.beginPath();
+            g.moveTo(s1.x, s1.y);
+            g.lineTo(s2.x, s2.y);
+            g.stroke();
+        };
+
+        const getLeftBackNetPos = (y, z) => {
+            const factorY = Math.sin(Math.PI * (y - goalY1) / (goalY2 - goalY1));
+            const factorZ = Math.sin(Math.PI * 0.5 * z / goalHeight);
+            const disp = leftExp * factorY * factorZ;
+            return { x: -goalDepth - disp, y: y, z: z };
+        };
+        const getLeftTopNetPos = (lx, ly) => {
+            const ratio = lx / -goalDepth;
+            const factorY = Math.sin(Math.PI * (ly - goalY1) / (goalY2 - goalY1));
+            const dispX = leftExp * factorY * ratio;
+            return { x: lx - dispX, y: ly, z: goalHeight };
+        };
+        const getRightBackNetPos = (y, z) => {
+            const factorY = Math.sin(Math.PI * (y - goalY1) / (goalY2 - goalY1));
+            const factorZ = Math.sin(Math.PI * 0.5 * z / goalHeight);
+            const disp = rightExp * factorY * factorZ;
+            return { x: fw + goalDepth + disp, y: y, z: z };
+        };
+        const getRightTopNetPos = (lx, ly) => {
+            const ratio = (lx - fw) / goalDepth;
+            const factorY = Math.sin(Math.PI * (ly - goalY1) / (goalY2 - goalY1));
+            const dispX = rightExp * factorY * ratio;
+            return { x: lx + dispX, y: ly, z: goalHeight };
+        };
+
+        const steps = 8;
+
+        if (doFrames) {
+            drawLine({ x: 0, y: goalY1, z: 0 }, { x: 0, y: goalY1, z: goalHeight }, '#FFFFFF', 3);
+            drawLine({ x: 0, y: goalY2, z: 0 }, { x: 0, y: goalY2, z: goalHeight }, '#FFFFFF', 3);
+            drawLine({ x: 0, y: goalY1, z: goalHeight }, { x: 0, y: goalY2, z: goalHeight }, '#FFFFFF', 3);
+            drawLine({ x: -goalDepth, y: goalY1, z: 0 }, { x: -goalDepth, y: goalY1, z: goalHeight }, '#888888', 1);
+            drawLine({ x: -goalDepth, y: goalY2, z: 0 }, { x: -goalDepth, y: goalY2, z: goalHeight }, '#888888', 1);
+            drawLine({ x: -goalDepth, y: goalY1, z: 0 }, { x: -goalDepth, y: goalY2, z: 0 }, '#888888', 1);
+
+            drawLine({ x: fw, y: goalY1, z: 0 }, { x: fw, y: goalY1, z: goalHeight }, '#FFFFFF', 3);
+            drawLine({ x: fw, y: goalY2, z: 0 }, { x: fw, y: goalY2, z: goalHeight }, '#FFFFFF', 3);
+            drawLine({ x: fw, y: goalY1, z: goalHeight }, { x: fw, y: goalY2, z: goalHeight }, '#FFFFFF', 3);
+            drawLine({ x: fw + goalDepth, y: goalY1, z: 0 }, { x: fw + goalDepth, y: goalY1, z: goalHeight }, '#888888', 1);
+            drawLine({ x: fw + goalDepth, y: goalY2, z: 0 }, { x: fw + goalDepth, y: goalY2, z: goalHeight }, '#888888', 1);
+            drawLine({ x: fw + goalDepth, y: goalY1, z: 0 }, { x: fw + goalDepth, y: goalY2, z: 0 }, '#888888', 1);
+        }
+
+        if (doSide) {
+            g.strokeStyle = 'rgba(210, 210, 210, 0.25)';
+            g.lineWidth = 1;
+            for (let lx = 0; lx >= -goalDepth; lx -= s(0.625)) {
+                drawLine({ x: lx, y: goalY1, z: 0 }, { x: lx, y: goalY1, z: goalHeight }, g.strokeStyle, 1);
+            }
+            for (let hz = Utils.scaleFieldY(1.0); hz <= goalHeight; hz += Utils.scaleFieldY(1.0)) {
+                drawLine({ x: 0, y: goalY1, z: hz }, { x: -goalDepth, y: goalY1, z: hz }, g.strokeStyle, 1);
+            }
+            for (let lx = 0; lx >= -goalDepth; lx -= s(0.625)) {
+                drawLine({ x: lx, y: goalY2, z: 0 }, { x: lx, y: goalY2, z: goalHeight }, g.strokeStyle, 1);
+            }
+            for (let hz = Utils.scaleFieldY(1.0); hz <= goalHeight; hz += Utils.scaleFieldY(1.0)) {
+                drawLine({ x: 0, y: goalY2, z: hz }, { x: -goalDepth, y: goalY2, z: hz }, g.strokeStyle, 1);
+            }
+            for (let lx = fw; lx <= fw + goalDepth; lx += s(0.625)) {
+                drawLine({ x: lx, y: goalY1, z: 0 }, { x: lx, y: goalY1, z: goalHeight }, g.strokeStyle, 1);
+            }
+            for (let hz = Utils.scaleFieldY(1.0); hz <= goalHeight; hz += Utils.scaleFieldY(1.0)) {
+                drawLine({ x: fw, y: goalY1, z: hz }, { x: fw + goalDepth, y: goalY1, z: hz }, g.strokeStyle, 1);
+            }
+            for (let lx = fw; lx <= fw + goalDepth; lx += s(0.625)) {
+                drawLine({ x: lx, y: goalY2, z: 0 }, { x: lx, y: goalY2, z: goalHeight }, g.strokeStyle, 1);
+            }
+            for (let hz = Utils.scaleFieldY(1.0); hz <= goalHeight; hz += Utils.scaleFieldY(1.0)) {
+                drawLine({ x: fw, y: goalY2, z: hz }, { x: fw + goalDepth, y: goalY2, z: hz }, g.strokeStyle, 1);
+            }
+        }
+
+        if (!doMesh) return;
+
+        g.strokeStyle = 'rgba(210, 210, 210, 0.35)';
+        g.lineWidth = 1;
+        // Left back + top
+        for (let hz = Utils.scaleFieldY(0.75); hz <= goalHeight; hz += Utils.scaleFieldY(0.9)) {
+            g.beginPath();
+            for (let i = 0; i <= steps; i++) {
+                const t = i / steps;
+                const ly = goalY1 + t * (goalY2 - goalY1);
+                const pt = getLeftBackNetPos(ly, hz);
+                const scr = Utils.toScreen(pt.x, pt.y, pt.z);
+                if (i === 0) g.moveTo(scr.x, scr.y);
+                else g.lineTo(scr.x, scr.y);
+            }
+            g.stroke();
+        }
+        for (let ly = goalY1 + Utils.scaleFieldY(1.0); ly < goalY2; ly += Utils.scaleFieldY(1.25)) {
+            g.beginPath();
+            for (let hz = 0; hz <= goalHeight; hz += Utils.scaleFieldY(0.9)) {
+                const pt = getLeftBackNetPos(ly, hz);
+                const scr = Utils.toScreen(pt.x, pt.y, pt.z);
+                if (hz === 0) g.moveTo(scr.x, scr.y);
+                else g.lineTo(scr.x, scr.y);
+            }
+            g.stroke();
+        }
+        for (let lx = -s(0.46875); lx >= -goalDepth; lx -= s(0.46875)) {
+            g.beginPath();
+            for (let i = 0; i <= steps; i++) {
+                const t = i / steps;
+                const ly = goalY1 + t * (goalY2 - goalY1);
+                const pt = getLeftTopNetPos(lx, ly);
+                const scr = Utils.toScreen(pt.x, pt.y, pt.z);
+                if (i === 0) g.moveTo(scr.x, scr.y);
+                else g.lineTo(scr.x, scr.y);
+            }
+            g.stroke();
+        }
+        for (let ly = goalY1 + Utils.scaleFieldY(1.0); ly < goalY2; ly += Utils.scaleFieldY(1.25)) {
+            g.beginPath();
+            for (let i = 0; i <= steps; i++) {
+                const t = i / steps;
+                const lx = -t * goalDepth;
+                const pt = getLeftTopNetPos(lx, ly);
+                const scr = Utils.toScreen(pt.x, pt.y, pt.z);
+                if (i === 0) g.moveTo(scr.x, scr.y);
+                else g.lineTo(scr.x, scr.y);
+            }
+            g.stroke();
+        }
+        // Right back + top
+        for (let hz = Utils.scaleFieldY(0.75); hz <= goalHeight; hz += Utils.scaleFieldY(0.9)) {
+            g.beginPath();
+            for (let i = 0; i <= steps; i++) {
+                const t = i / steps;
+                const ly = goalY1 + t * (goalY2 - goalY1);
+                const pt = getRightBackNetPos(ly, hz);
+                const scr = Utils.toScreen(pt.x, pt.y, pt.z);
+                if (i === 0) g.moveTo(scr.x, scr.y);
+                else g.lineTo(scr.x, scr.y);
+            }
+            g.stroke();
+        }
+        for (let ly = goalY1 + Utils.scaleFieldY(1.0); ly < goalY2; ly += Utils.scaleFieldY(1.25)) {
+            g.beginPath();
+            for (let hz = 0; hz <= goalHeight; hz += Utils.scaleFieldY(0.9)) {
+                const pt = getRightBackNetPos(ly, hz);
+                const scr = Utils.toScreen(pt.x, pt.y, pt.z);
+                if (hz === 0) g.moveTo(scr.x, scr.y);
+                else g.lineTo(scr.x, scr.y);
+            }
+            g.stroke();
+        }
+        for (let lx = fw + s(0.46875); lx <= fw + goalDepth; lx += s(0.46875)) {
+            g.beginPath();
+            for (let i = 0; i <= steps; i++) {
+                const t = i / steps;
+                const ly = goalY1 + t * (goalY2 - goalY1);
+                const pt = getRightTopNetPos(lx, ly);
+                const scr = Utils.toScreen(pt.x, pt.y, pt.z);
+                if (i === 0) g.moveTo(scr.x, scr.y);
+                else g.lineTo(scr.x, scr.y);
+            }
+            g.stroke();
+        }
+        for (let ly = goalY1 + Utils.scaleFieldY(1.0); ly < goalY2; ly += Utils.scaleFieldY(1.25)) {
+            g.beginPath();
+            for (let i = 0; i <= steps; i++) {
+                const t = i / steps;
+                const lx = fw + t * goalDepth;
+                const pt = getRightTopNetPos(lx, ly);
+                const scr = Utils.toScreen(pt.x, pt.y, pt.z);
+                if (i === 0) g.moveTo(scr.x, scr.y);
+                else g.lineTo(scr.x, scr.y);
+            }
+            g.stroke();
+        }
     }
 
     rebuildCache(fw, fh, fcX, fcY, scale, tw, th, s, surroundMargin) {
@@ -478,51 +762,8 @@ class Pitch extends GameObject {
             drawAdBoard(fw + surroundMargin - 0.1, y, fw + surroundMargin - 0.1, y + boardWidth, bColor, '#FFFFFF', sponsor);
         }
 
-        // Turf stripes based on projection mode
-        if (Settings.projectionMode === 'isometric') {
-            for (let x = 0; x < this.widthTiles; x++) {
-                for (let y = 0; y < this.heightTiles; y++) {
-                    const isLight = Math.floor(x / 4) % 2 === 0;
-                    const grassColor = isLight ? '#4c9c4c' : '#418b41';
-                    
-                    const scr = Utils.toScreen(x, y);
-
-                    cg.fillStyle = grassColor;
-                    cg.beginPath();
-                    cg.moveTo(scr.x, scr.y - th / 4);
-                    cg.lineTo(scr.x + tw / 2, scr.y);
-                    cg.lineTo(scr.x, scr.y + th / 4);
-                    cg.lineTo(scr.x - tw / 2, scr.y);
-                    cg.closePath();
-                    cg.fill();
-                }
-            }
-        } else if (Settings.projectionMode === 'topdown') {
-            const { scaleX, scaleY } = Utils.getOrthoScales(scale);
-
-            for (let x = 0; x < fw; x += 2) {
-                const isLight = (x / 2) % 2 === 0;
-                cg.fillStyle = isLight ? '#4c9c4c' : '#418b41';
-                cg.fillRect(offsetX + x * scaleX, offsetY, 2 * scaleX, fh * scaleY);
-            }
-        } else {
-            // orthographic broadcast
-            for (let x = 0; x < fw; x += 2) {
-                const isLight = (x / 2) % 2 === 0;
-                cg.fillStyle = isLight ? '#4c9c4c' : '#418b41';
-                const tl = Utils.toScreen(x, 0);
-                const tr = Utils.toScreen(x + 2, 0);
-                const br = Utils.toScreen(x + 2, fh);
-                const bl = Utils.toScreen(x, fh);
-                cg.beginPath();
-                cg.moveTo(tl.x, tl.y);
-                cg.lineTo(tr.x, tr.y);
-                cg.lineTo(br.x, br.y);
-                cg.lineTo(bl.x, bl.y);
-                cg.closePath();
-                cg.fill();
-            }
-        }
+        // Turf stripes (iso uses band quads — not one diamond per tile)
+        this._paintTurf(cg, fw, fh, scale, tw, th, offsetX, offsetY);
 
         // Apply weather-based field alterations
         if (Settings.weather === 'rainy') {
@@ -698,6 +939,9 @@ class Pitch extends GameObject {
         drawCornerArc(fw, 0, Math.PI / 2, Math.PI);             // Top-Right
         drawCornerArc(fw, fh, Math.PI, 3 * Math.PI / 2);        // Bottom-Right
 
+        // Rest-state goals (posts + nets) — live mesh only when net spring is active
+        this._paintGoals(cg, fw, s, 0, 0, { frames: true, sideNets: true, meshNets: true });
+
         cg.restore();
 
         // 4. Record cache params
@@ -756,46 +1000,7 @@ class Pitch extends GameObject {
             g.fillStyle = '#224d22';
             drawProjectedQuad(-surroundMargin, -surroundMargin, fw + surroundMargin, fh + surroundMargin);
 
-            if (Settings.projectionMode === 'isometric') {
-                for (let x = 0; x < this.widthTiles; x++) {
-                    for (let y = 0; y < this.heightTiles; y++) {
-                        const isLight = Math.floor(x / 4) % 2 === 0;
-                        const grassColor = isLight ? '#4c9c4c' : '#418b41';
-                        const scr = Utils.toScreen(x, y);
-                        g.fillStyle = grassColor;
-                        g.beginPath();
-                        g.moveTo(scr.x, scr.y - th / 4);
-                        g.lineTo(scr.x + tw / 2, scr.y);
-                        g.lineTo(scr.x, scr.y + th / 4);
-                        g.lineTo(scr.x - tw / 2, scr.y);
-                        g.closePath();
-                        g.fill();
-                    }
-                }
-            } else if (Settings.projectionMode === 'topdown') {
-                const { scaleX, scaleY } = Utils.getOrthoScales(scale);
-                for (let x = 0; x < fw; x += 2) {
-                    const isLight = (x / 2) % 2 === 0;
-                    g.fillStyle = isLight ? '#4c9c4c' : '#418b41';
-                    g.fillRect(offsetX + x * scaleX, offsetY, 2 * scaleX, fh * scaleY);
-                }
-            } else {
-                for (let x = 0; x < fw; x += 2) {
-                    const isLight = (x / 2) % 2 === 0;
-                    g.fillStyle = isLight ? '#4c9c4c' : '#418b41';
-                    const tl = Utils.toScreen(x, 0);
-                    const tr = Utils.toScreen(x + 2, 0);
-                    const br = Utils.toScreen(x + 2, fh);
-                    const bl = Utils.toScreen(x, fh);
-                    g.beginPath();
-                    g.moveTo(tl.x, tl.y);
-                    g.lineTo(tr.x, tr.y);
-                    g.lineTo(br.x, br.y);
-                    g.lineTo(bl.x, bl.y);
-                    g.closePath();
-                    g.fill();
-                }
-            }
+            this._paintTurf(g, fw, fh, scale, tw, th, offsetX, offsetY);
 
             const drawLine = (p1, p2, color = '#FFFFFF', width = 2) => {
                 const s1 = Utils.toScreen(p1.x, p1.y, p1.z || 0);
@@ -904,227 +1109,26 @@ class Pitch extends GameObject {
             drawCornerArc(fw, fh, Math.PI, 3 * Math.PI / 2);
         }
 
-        // 3. Draw 3D Goals dynamically on the main canvas (to preserve physical expansion)
-        const drawLine = (p1, p2, color = '#FFFFFF', width = 2) => {
-            const s1 = Utils.toScreen(p1.x, p1.y, p1.z || 0);
-            const s2 = Utils.toScreen(p2.x, p2.y, p2.z || 0);
-            g.strokeStyle = color;
-            g.lineWidth = width;
-            g.beginPath();
-            g.moveTo(s1.x, s1.y);
-            g.lineTo(s2.x, s2.y);
-            g.stroke();
-        };
-
-        // 6. Draw 3D Goals (A & B) using projection (geometry from Goal entities)
-        this.ensureGoals();
-        const goalHeight = this.leftGoal.height;
-        const goalDepth = this.leftGoal.renderDepth;
-        const goalY1 = this.leftGoal.yMin;
-        const goalY2 = this.leftGoal.yMax;
-
-        // --- Left Goal Net Helper Functions ---
-        const getLeftBackNetPos = (y, z) => {
-            const factorY = Math.sin(Math.PI * (y - goalY1) / (goalY2 - goalY1));
-            const factorZ = Math.sin(Math.PI * 0.5 * z / goalHeight);
-            const disp = this.leftNetExp * factorY * factorZ;
-            return { x: -goalDepth - disp, y: y, z: z };
-        };
-
-        const getLeftTopNetPos = (lx, ly) => {
-            const ratio = lx / -goalDepth;
-            const factorY = Math.sin(Math.PI * (ly - goalY1) / (goalY2 - goalY1));
-            const dispX = this.leftNetExp * factorY * ratio;
-            return { x: lx - dispX, y: ly, z: goalHeight };
-        };
-
-        // --- Right Goal Net Helper Functions ---
-        const getRightBackNetPos = (y, z) => {
-            const factorY = Math.sin(Math.PI * (y - goalY1) / (goalY2 - goalY1));
-            const factorZ = Math.sin(Math.PI * 0.5 * z / goalHeight);
-            const disp = this.rightNetExp * factorY * factorZ;
-            return { x: fw + goalDepth + disp, y: y, z: z };
-        };
-
-        const getRightTopNetPos = (lx, ly) => {
-            const ratio = (lx - fw) / goalDepth;
-            const factorY = Math.sin(Math.PI * (ly - goalY1) / (goalY2 - goalY1));
-            const dispX = this.rightNetExp * factorY * ratio;
-            return { x: lx + dispX, y: ly, z: goalHeight };
-        };
-
-        const steps = 8;
-
-        // Left Goal (Goal A)
-        // 1. Rigid frames
-        drawLine({x: 0, y: goalY1, z: 0}, {x: 0, y: goalY1, z: goalHeight}, '#FFFFFF', 3);
-        drawLine({x: 0, y: goalY2, z: 0}, {x: 0, y: goalY2, z: goalHeight}, '#FFFFFF', 3);
-        drawLine({x: 0, y: goalY1, z: goalHeight}, {x: 0, y: goalY2, z: goalHeight}, '#FFFFFF', 3);
-
-        // 2. Anchor poles at the back (rigid, but net attaches to them)
-        drawLine({x: -goalDepth, y: goalY1, z: 0}, {x: -goalDepth, y: goalY1, z: goalHeight}, '#888888', 1);
-        drawLine({x: -goalDepth, y: goalY2, z: 0}, {x: -goalDepth, y: goalY2, z: goalHeight}, '#888888', 1);
-        drawLine({x: -goalDepth, y: goalY1, z: 0}, {x: -goalDepth, y: goalY2, z: 0}, '#888888', 1);
-
-        // 3. Side nets (flat, since they are on the boundaries)
-        g.strokeStyle = 'rgba(210, 210, 210, 0.25)';
-        g.lineWidth = 1;
-        // Left side net
-        for (let lx = 0; lx >= -goalDepth; lx -= s(0.625)) {
-            drawLine({x: lx, y: goalY1, z: 0}, {x: lx, y: goalY1, z: goalHeight}, g.strokeStyle, 1);
-        }
-        for (let hz = Utils.scaleFieldY(1.0); hz <= goalHeight; hz += Utils.scaleFieldY(1.0)) {
-            drawLine({x: 0, y: goalY1, z: hz}, {x: -goalDepth, y: goalY1, z: hz}, g.strokeStyle, 1);
-        }
-        // Right side net
-        for (let lx = 0; lx >= -goalDepth; lx -= s(0.625)) {
-            drawLine({x: lx, y: goalY2, z: 0}, {x: lx, y: goalY2, z: goalHeight}, g.strokeStyle, 1);
-        }
-        for (let hz = Utils.scaleFieldY(1.0); hz <= goalHeight; hz += Utils.scaleFieldY(1.0)) {
-            drawLine({x: 0, y: goalY2, z: hz}, {x: -goalDepth, y: goalY2, z: hz}, g.strokeStyle, 1);
+        // Goals: rest-state baked into pitch cache on real canvas; live mesh only while nets spring.
+        // Mock contexts (no drawImage) paint full goals every frame.
+        const eps = Settings.GOAL_NET_AT_REST_EPS != null ? Settings.GOAL_NET_AT_REST_EPS : 0.0005;
+        const netsMoving =
+            Math.abs(this.leftNetExp) > eps || Math.abs(this.rightNetExp) > eps;
+        if (!isRealContext) {
+            this._paintGoals(g, fw, s, this.leftNetExp, this.rightNetExp, {
+                frames: true,
+                sideNets: true,
+                meshNets: true
+            });
+        } else if (netsMoving) {
+            // Overlay deformed back/top mesh; posts/sides/rest mesh stay in the blit
+            this._paintGoals(g, fw, s, this.leftNetExp, this.rightNetExp, {
+                frames: false,
+                sideNets: false,
+                meshNets: true
+            });
         }
 
-        // 4. Back net mesh (curved)
-        g.strokeStyle = 'rgba(210, 210, 210, 0.35)';
-        g.lineWidth = 1;
-        // Back net horizontal mesh lines
-        for (let hz = Utils.scaleFieldY(0.75); hz <= goalHeight; hz += Utils.scaleFieldY(0.9)) {
-            g.beginPath();
-            for (let i = 0; i <= steps; i++) {
-                const t = i / steps;
-                const ly = goalY1 + t * (goalY2 - goalY1);
-                const pt = getLeftBackNetPos(ly, hz);
-                const scr = Utils.toScreen(pt.x, pt.y, pt.z);
-                if (i === 0) g.moveTo(scr.x, scr.y);
-                else g.lineTo(scr.x, scr.y);
-            }
-            g.stroke();
-        }
-        // Back net vertical mesh lines
-        for (let ly = goalY1 + Utils.scaleFieldY(1.0); ly < goalY2; ly += Utils.scaleFieldY(1.25)) {
-            g.beginPath();
-            for (let hz = 0; hz <= goalHeight; hz += Utils.scaleFieldY(0.9)) {
-                const pt = getLeftBackNetPos(ly, hz);
-                const scr = Utils.toScreen(pt.x, pt.y, pt.z);
-                if (hz === 0) g.moveTo(scr.x, scr.y);
-                else g.lineTo(scr.x, scr.y);
-            }
-            g.stroke();
-        }
-
-        // 5. Top net mesh (curved)
-        // Top net lines parallel to crossbar
-        for (let lx = -s(0.46875); lx >= -goalDepth; lx -= s(0.46875)) {
-            g.beginPath();
-            for (let i = 0; i <= steps; i++) {
-                const t = i / steps;
-                const ly = goalY1 + t * (goalY2 - goalY1);
-                const pt = getLeftTopNetPos(lx, ly);
-                const scr = Utils.toScreen(pt.x, pt.y, pt.z);
-                if (i === 0) g.moveTo(scr.x, scr.y);
-                else g.lineTo(scr.x, scr.y);
-            }
-            g.stroke();
-        }
-        // Top net lines running front to back
-        for (let ly = goalY1 + Utils.scaleFieldY(1.0); ly < goalY2; ly += Utils.scaleFieldY(1.25)) {
-            g.beginPath();
-            for (let i = 0; i <= steps; i++) {
-                const t = i / steps;
-                const lx = -t * goalDepth;
-                const pt = getLeftTopNetPos(lx, ly);
-                const scr = Utils.toScreen(pt.x, pt.y, pt.z);
-                if (i === 0) g.moveTo(scr.x, scr.y);
-                else g.lineTo(scr.x, scr.y);
-            }
-            g.stroke();
-        }
-
-
-        // Right Goal (Goal B)
-        // 1. Rigid frames
-        drawLine({x: fw, y: goalY1, z: 0}, {x: fw, y: goalY1, z: goalHeight}, '#FFFFFF', 3);
-        drawLine({x: fw, y: goalY2, z: 0}, {x: fw, y: goalY2, z: goalHeight}, '#FFFFFF', 3);
-        drawLine({x: fw, y: goalY1, z: goalHeight}, {x: fw, y: goalY2, z: goalHeight}, '#FFFFFF', 3);
-
-        // 2. Anchor poles at the back (rigid, but net attaches to them)
-        drawLine({x: fw + goalDepth, y: goalY1, z: 0}, {x: fw + goalDepth, y: goalY1, z: goalHeight}, '#888888', 1);
-        drawLine({x: fw + goalDepth, y: goalY2, z: 0}, {x: fw + goalDepth, y: goalY2, z: goalHeight}, '#888888', 1);
-        drawLine({x: fw + goalDepth, y: goalY1, z: 0}, {x: fw + goalDepth, y: goalY2, z: 0}, '#888888', 1);
-
-        // 3. Side nets (flat, since they are on the boundaries)
-        g.strokeStyle = 'rgba(210, 210, 210, 0.25)';
-        g.lineWidth = 1;
-        // Left side net
-        for (let lx = fw; lx <= fw + goalDepth; lx += s(0.625)) {
-            drawLine({x: lx, y: goalY1, z: 0}, {x: lx, y: goalY1, z: goalHeight}, g.strokeStyle, 1);
-        }
-        for (let hz = Utils.scaleFieldY(1.0); hz <= goalHeight; hz += Utils.scaleFieldY(1.0)) {
-            drawLine({x: fw, y: goalY1, z: hz}, {x: fw + goalDepth, y: goalY1, z: hz}, g.strokeStyle, 1);
-        }
-        // Right side net
-        for (let lx = fw; lx <= fw + goalDepth; lx += s(0.625)) {
-            drawLine({x: lx, y: goalY2, z: 0}, {x: lx, y: goalY2, z: goalHeight}, g.strokeStyle, 1);
-        }
-        for (let hz = Utils.scaleFieldY(1.0); hz <= goalHeight; hz += Utils.scaleFieldY(1.0)) {
-            drawLine({x: fw, y: goalY2, z: hz}, {x: fw + goalDepth, y: goalY2, z: hz}, g.strokeStyle, 1);
-        }
-
-        // 4. Back net mesh (curved)
-        g.strokeStyle = 'rgba(210, 210, 210, 0.35)';
-        g.lineWidth = 1;
-        // Back net horizontal mesh lines
-        for (let hz = Utils.scaleFieldY(0.75); hz <= goalHeight; hz += Utils.scaleFieldY(0.9)) {
-            g.beginPath();
-            for (let i = 0; i <= steps; i++) {
-                const t = i / steps;
-                const ly = goalY1 + t * (goalY2 - goalY1);
-                const pt = getRightBackNetPos(ly, hz);
-                const scr = Utils.toScreen(pt.x, pt.y, pt.z);
-                if (i === 0) g.moveTo(scr.x, scr.y);
-                else g.lineTo(scr.x, scr.y);
-            }
-            g.stroke();
-        }
-        // Back net vertical mesh lines
-        for (let ly = goalY1 + Utils.scaleFieldY(1.0); ly < goalY2; ly += Utils.scaleFieldY(1.25)) {
-            g.beginPath();
-            for (let hz = 0; hz <= goalHeight; hz += Utils.scaleFieldY(0.9)) {
-                const pt = getRightBackNetPos(ly, hz);
-                const scr = Utils.toScreen(pt.x, pt.y, pt.z);
-                if (hz === 0) g.moveTo(scr.x, scr.y);
-                else g.lineTo(scr.x, scr.y);
-            }
-            g.stroke();
-        }
-
-        // 5. Top net mesh (curved)
-        // Top net lines parallel to crossbar
-        for (let lx = fw + s(0.46875); lx <= fw + goalDepth; lx += s(0.46875)) {
-            g.beginPath();
-            for (let i = 0; i <= steps; i++) {
-                const t = i / steps;
-                const ly = goalY1 + t * (goalY2 - goalY1);
-                const pt = getRightTopNetPos(lx, ly);
-                const scr = Utils.toScreen(pt.x, pt.y, pt.z);
-                if (i === 0) g.moveTo(scr.x, scr.y);
-                else g.lineTo(scr.x, scr.y);
-            }
-            g.stroke();
-        }
-        // Top net lines running front to back
-        for (let ly = goalY1 + Utils.scaleFieldY(1.0); ly < goalY2; ly += Utils.scaleFieldY(1.25)) {
-            g.beginPath();
-            for (let i = 0; i <= steps; i++) {
-                const t = i / steps;
-                const lx = fw + t * goalDepth;
-                const pt = getRightTopNetPos(lx, ly);
-                const scr = Utils.toScreen(pt.x, pt.y, pt.z);
-                if (i === 0) g.moveTo(scr.x, scr.y);
-                else g.lineTo(scr.x, scr.y);
-            }
-            g.stroke();
-        }
     }
 }
 
