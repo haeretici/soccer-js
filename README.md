@@ -48,7 +48,7 @@ Then open:
 | Asset Manager | http://localhost:8080/html/asset-manager.html |
 | Scenario Lab | http://localhost:8080/html/tests.html |
 
-Root `index.html` redirects to `html/` (relative — works under a subpath).
+Root `index.html` redirects to `html/`, treating a missing trailing slash as a directory so `/prefix` and `/prefix/` both go to `/prefix/html/`.
 
 ### Subpath hosting
 

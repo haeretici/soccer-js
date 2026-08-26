@@ -6,7 +6,11 @@
         <title>Retro Iso-Soccer Engine Simulator</title>
         <link rel="icon" href="favicon.ico">
         <script>
-            window.location.replace('html/');
+            // Relative "html/" treats a no-slash URL as a file: /soccer-js + html/ → /html/.
+            // Keep the last segment as a directory; also handle /index.html.
+            const path = location.pathname.replace(/\/index\.html$/i, '/');
+            const dir = path.endsWith('/') ? path : path + '/';
+            window.location.replace(dir + 'html/' + location.search + location.hash);
         </script>
     </head>
     <body>

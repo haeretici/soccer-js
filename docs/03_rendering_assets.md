@@ -42,6 +42,7 @@ When `Settings.RENDER_SKIP_WHEN_PAUSED` (default **true**) and `Application.paus
 ## Subpath hosting (`app_paths.js`)
 Browser pages live under `html/`. Runtime asset/preset URLs must not use host-root `/…` so the app works under a deploy prefix (e.g. `https://host/soccer/html/`).
 
+* **Root `index.html`:** redirects to `html/` using the pathname as a directory (`/prefix` and `/prefix/` → `/prefix/html/`). A relative `html/` target would drop the prefix when the URL has no trailing slash (`/soccer-js` → `/html/`).
 * **`kernel/core/lib/app_paths.js`:** `getAppRoot()` / `appUrl(relPath)` resolve the repo root from `document.baseURI` (parent of the `/html/` path segment). Optional override: `window.__APP_ROOT__`.
 * **HTML static tags** (`link`, `script`, default flag `img`): relative `../build/…`, `../assets/…` from `html/*.html`.
 * **JS fetch / Image:** always `appUrl('assets/…')` or `appUrl('presets/…')` — relative strings in the bundle resolve against the **page**, not the script file.
